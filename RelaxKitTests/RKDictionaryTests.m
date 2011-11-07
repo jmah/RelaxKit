@@ -47,4 +47,45 @@
     STAssertFalse([[dict dictionaryRepresentation] isEqual:[copy dictionaryRepresentation]], @"Copies should have equal dictionary representations");
 }
 
+- (void)testModificationBlocks;
+{
+    RKDictionary *dict = [[RKDictionary alloc] init];
+    STAssertFalse(dict.insideModificationBlock, NULL);
+    
+    BOOL modSuccess = [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+        STAssertTrue(dict == localDict, @"Argument should be same as receiver");
+        STAssertTrue(localDict.insideModificationBlock, NULL);
+        return YES;
+    }];
+    STAssertFalse(dict.insideModificationBlock, NULL);
+    STAssertTrue(modSuccess, NULL);
+    
+    modSuccess = [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+        return NO;
+    }];
+    STAssertFalse(modSuccess, NULL);
+    
+    [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+        [localDict setValue:@"Freddie" forKey:@"firstName"];
+        return YES;
+    }];
+    STAssertTrue([dict count] == 1, @"Setting new value should increase count");
+    STAssertEqualObjects([dict valueForKey:@"firstName"], @"Freddie", @"Getter should return equal value");
+    
+    __block NSDictionary *beforeDict;
+    [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+        beforeDict = [localDict dictionaryRepresentation];
+        [localDict modifyWithBlock:^BOOL(RKDictionary *innerDict) {
+            STAssertTrue(dict.insideModificationBlock, NULL);
+            STAssertTrue(innerDict.insideModificationBlock, NULL);
+            [localDict setValue:@"Mercury" forKey:@"lastName"];
+            return YES;
+        }];
+        return YES;
+    }];
+    STAssertTrue([beforeDict count] == 1, @"Dictionary representation should be immutable snapshot");
+    STAssertTrue([dict count] == 2, @"Setting new value should increase count");
+    STAssertEqualObjects([dict valueForKey:@"lastName"], @"Mercury", @"Getter should return equal value");
+}
+
 @end

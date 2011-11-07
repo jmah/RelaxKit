@@ -12,5 +12,6 @@
 @interface RKDictionaryTests : SenTestCase
 
 - (void)testDictionarylike;
+- (void)testModificationBlocks;
 
 @end

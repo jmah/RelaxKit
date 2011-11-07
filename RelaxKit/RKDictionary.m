@@ -12,6 +12,7 @@
 
 @implementation RKDictionary {
     NSMutableDictionary *_backingDictionary;
+    NSUInteger _insideModificationBlockRef;
 }
 
 @synthesize document = _document;
@@ -63,6 +64,19 @@
 - (NSDictionary *)dictionaryRepresentation;
 {
     return [NSDictionary dictionaryWithDictionary:_backingDictionary];
+}
+
+- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
+{
+    _insideModificationBlockRef++;
+    BOOL success = modBlock(self);
+    _insideModificationBlockRef--;
+    return success;
+}
+
+- (BOOL)insideModificationBlock;
+{
+    return _insideModificationBlockRef > 0;
 }
 
 @end
