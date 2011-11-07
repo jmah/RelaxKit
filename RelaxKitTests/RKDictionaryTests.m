@@ -13,6 +13,7 @@
 
 static NSString *const firstNameKey = @"firstName";
 static NSString *const lastNameKey = @"lastName";
+static NSString *const salesCountKey = @"salesCount";
 
 
 @implementation RKDictionaryTests
@@ -137,6 +138,17 @@ static NSString *const lastNameKey = @"lastName";
     [dict setValue:@"WOWZA" forKey:firstNameKey];
     modDict = [dict dictionaryByModifyingWithBlock:lowercaseFirstName];
     STAssertEqualObjects([modDict valueForKey:firstNameKey], @"wowza", @"Modification block should alter value");
+    
+    
+    RKModificationBlock incrementSalesCount = ^BOOL(RKDictionary *localDict) {
+        NSNumber *salesCount = [localDict valueForKey:salesCountKey];
+        [localDict setValue:[NSNumber numberWithLong:([salesCount longValue] + 1)] forKey:salesCountKey];
+        return YES;
+    };
+    
+    [dict setValue:[NSNumber numberWithLong:20] forKey:salesCountKey];
+    modDict = [dict dictionaryByModifyingWithBlock:incrementSalesCount];
+    STAssertEqualObjects([modDict valueForKey:salesCountKey], [NSNumber numberWithLong:21], @"Modification block should alter value");
 }
 
 @end
