@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		280415881467C6D1001FD37D /* RKDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 280415871467C6D1001FD37D /* RKDictionaryTests.m */; };
 		2859BCF01467B9140067F2A5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2859BCEF1467B9140067F2A5 /* Cocoa.framework */; };
 		2859BCFA1467B9140067F2A5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2859BCF81467B9140067F2A5 /* InfoPlist.strings */; };
 		2859BD061467B9140067F2A5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2859BD051467B9140067F2A5 /* SenTestingKit.framework */; };
@@ -35,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		280415861467C6D1001FD37D /* RKDictionaryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDictionaryTests.h; sourceTree = "<group>"; };
+		280415871467C6D1001FD37D /* RKDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryTests.m; sourceTree = "<group>"; };
 		2859BCEC1467B9140067F2A5 /* RelaxKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RelaxKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2859BCEF1467B9140067F2A5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2859BCF21467B9140067F2A5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -151,6 +154,8 @@
 			children = (
 				2859BD231467C12F0067F2A5 /* RKRevisionTests.h */,
 				2859BD241467C12F0067F2A5 /* RKRevisionTests.m */,
+				280415861467C6D1001FD37D /* RKDictionaryTests.h */,
+				280415871467C6D1001FD37D /* RKDictionaryTests.m */,
 				2859BD0C1467B9140067F2A5 /* Supporting Files */,
 			);
 			path = RelaxKitTests;
@@ -298,6 +303,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2859BD251467C12F0067F2A5 /* RKRevisionTests.m in Sources */,
+				280415881467C6D1001FD37D /* RKDictionaryTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +465,7 @@
 				2859BD181467B9140067F2A5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2859BD191467B9140067F2A5 /* Build configuration list for PBXNativeTarget "RelaxKitTests" */ = {
 			isa = XCConfigurationList;
@@ -467,6 +474,7 @@
 				2859BD1B1467B9140067F2A5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

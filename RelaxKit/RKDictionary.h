@@ -13,8 +13,12 @@
 
 @interface RKDictionary : NSObject <NSCopying>
 
+- (id)init; // Designated initializer
+
 @property (readonly, nonatomic, weak) RKDocument *document;
+
 - (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
+- (NSUInteger)count;
 
 // To be clear, the main interface to this class is:
 - (id)valueForKey:(NSString *)key;
