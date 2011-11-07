@@ -8,6 +8,9 @@
 
 #import "RelaxKitTests.h"
 
+#import <RelaxKit/RelaxKit.h>
+
+
 @implementation RelaxKitTests
 
 - (void)setUp
@@ -26,7 +29,7 @@
 
 - (void)testExample
 {
-    STFail(@"Unit tests are not implemented yet in RelaxKitTests");
+    STAssertNotNil([RKRevision class], @"Not linked correctly");
 }
 
 @end
