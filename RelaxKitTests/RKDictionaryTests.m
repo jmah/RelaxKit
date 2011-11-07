@@ -11,6 +11,10 @@
 #import "RKDictionary-Private.h"
 
 
+static NSString *const firstNameKey = @"firstName";
+static NSString *const lastNameKey = @"lastName";
+
+
 @implementation RKDictionaryTests
 
 #pragma mark - Tests
@@ -21,17 +25,17 @@
     STAssertTrue([dict count] == 0, @"New dictionary should be empty");
     STAssertNil(dict.document, @"New dictionary should start with no document");
     
-    [dict setValue:@"Freddie" forKey:@"firstName"];
+    [dict setValue:@"Freddie" forKey:firstNameKey];
     STAssertTrue([dict count] == 1, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:@"firstName"], @"Freddie", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Getter should return equal value");
     
     NSDictionary *afterOneDict = [dict dictionaryRepresentation];
     STAssertTrue([afterOneDict count] == 1, @"Dictionary representation should have same count and values");
-    STAssertEqualObjects([afterOneDict valueForKey:@"firstName"], @"Freddie", @"Dictionary representation should have same count and values");
+    STAssertEqualObjects([afterOneDict valueForKey:firstNameKey], @"Freddie", @"Dictionary representation should have same count and values");
     
-    [dict setValue:@"Mercury" forKey:@"lastName"];
+    [dict setValue:@"Mercury" forKey:lastNameKey];
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:@"lastName"], @"Mercury", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:lastNameKey], @"Mercury", @"Getter should return equal value");
     
     STAssertTrue([afterOneDict count] == 1, @"Dictionary representation should be immutable snapshot");
     STAssertTrue([[dict dictionaryRepresentation] count] == 2, @"Setting new value should increase count");
@@ -40,10 +44,10 @@
     
     STAssertEqualObjects([dict dictionaryRepresentation], [copy dictionaryRepresentation], @"Copies should have equal dictionary representations");
     
-    [dict setValue:@"Farrokh" forKey:@"firstName"];
+    [dict setValue:@"Farrokh" forKey:firstNameKey];
     STAssertTrue([dict count] == 2, @"Setting value for old key should keep count constant");
-    STAssertEqualObjects([dict valueForKey:@"firstName"], @"Farrokh", @"Getter should return equal value");
-    STAssertEqualObjects([copy valueForKey:@"firstName"], @"Freddie", @"Copy should have separate mutation");
+    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Farrokh", @"Getter should return equal value");
+    STAssertEqualObjects([copy valueForKey:firstNameKey], @"Freddie", @"Copy should have separate mutation");
     
     STAssertFalse([[dict dictionaryRepresentation] isEqual:[copy dictionaryRepresentation]], @"Copies should have equal dictionary representations");
 }
@@ -67,11 +71,11 @@
     STAssertFalse(modSuccess, NULL);
     
     [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
-        [localDict setValue:@"Freddie" forKey:@"firstName"];
+        [localDict setValue:@"Freddie" forKey:firstNameKey];
         return YES;
     }];
     STAssertTrue([dict count] == 1, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:@"firstName"], @"Freddie", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Getter should return equal value");
     
     __block NSDictionary *beforeDict;
     [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
@@ -79,46 +83,60 @@
         [localDict modifyWithBlock:^BOOL(RKDictionary *innerDict) {
             STAssertTrue(dict.insideModificationBlock, NULL);
             STAssertTrue(innerDict.insideModificationBlock, NULL);
-            [localDict setValue:@"Mercury" forKey:@"lastName"];
+            [localDict setValue:@"Mercury" forKey:lastNameKey];
             return YES;
         }];
         return YES;
     }];
     STAssertTrue([beforeDict count] == 1, @"Dictionary representation should be immutable snapshot");
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:@"lastName"], @"Mercury", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:lastNameKey], @"Mercury", @"Getter should return equal value");
     
-    RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKey:@"firstName"];
-    STAssertEqualObjects([dict valueForKey:@"firstName"], @"Freddie", @"Generating modification block shouldn't have side effects");
+    RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKey:firstNameKey];
+    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Generating modification block shouldn't have side effects");
     
     RKDictionary *modDict = [dict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
     STAssertNotNil(modDict, @"Modification should succeed with old value");
-    STAssertEqualObjects([modDict valueForKey:@"firstName"], @"Farrokh", @"Modification block should have changed value");
+    STAssertEqualObjects([modDict valueForKey:firstNameKey], @"Farrokh", @"Modification block should alter value");
     
     RKDictionary *scratchDict = [dict copy];
-    [scratchDict setValue:@"Farrokh" forKey:@"firstName"];
+    [scratchDict setValue:@"Farrokh" forKey:firstNameKey];
     modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
     STAssertNotNil(modDict, @"Modification should succeed if already at new value");
-    STAssertEqualObjects([modDict valueForKey:@"firstName"], @"Farrokh", @"Modification block should have changed value");
+    STAssertEqualObjects([modDict valueForKey:firstNameKey], @"Farrokh", @"Modification block should alter value");
     
-    [scratchDict setValue:@"completelyDifferent" forKey:@"firstName"];
+    [scratchDict setValue:@"completelyDifferent" forKey:firstNameKey];
     modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
     STAssertNil(modDict, @"Modification should fail if value is neither old nor new");
     
-    [scratchDict setValue:nil forKey:@"firstName"];
+    [scratchDict setValue:nil forKey:firstNameKey];
     modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
     STAssertNil(modDict, @"Modification should fail if value is neither old nor new");
     
-    RKModificationBlock noRealChange = [dict modificationBlockToSetValue:@"Freddie" forKey:@"firstName"];
-    [scratchDict setValue:@"completelyDifferent" forKey:@"firstName"];
+    RKModificationBlock noRealChange = [dict modificationBlockToSetValue:@"Freddie" forKey:firstNameKey];
+    [scratchDict setValue:@"completelyDifferent" forKey:firstNameKey];
     modDict = [scratchDict dictionaryByModifyingWithBlock:noRealChange];
     STAssertNotNil(modDict, @"Any modification should succeed if setter was identity");
-    STAssertEqualObjects([modDict valueForKey:@"firstName"], @"completelyDifferent", @"Any modification should succeed if setter was identity");
+    STAssertEqualObjects([modDict valueForKey:firstNameKey], @"completelyDifferent", @"Any modification should succeed if setter was identity");
     
-    [scratchDict setValue:nil forKey:@"firstName"];
+    [scratchDict setValue:nil forKey:firstNameKey];
     modDict = [scratchDict dictionaryByModifyingWithBlock:noRealChange];
     STAssertNotNil(modDict, @"Any modification should succeed if setter was identity");
     STAssertTrue([modDict count] == 1, @"Any modification should succeed if setter was identity");
+    
+    
+    RKModificationBlock lowercaseFirstName = ^BOOL(RKDictionary *localDict) {
+        NSString *lowercased = [[localDict valueForKey:firstNameKey] lowercaseString];
+        [localDict setValue:lowercased forKey:firstNameKey];
+        return YES;
+    };
+    
+    modDict = [dict dictionaryByModifyingWithBlock:lowercaseFirstName];
+    STAssertEqualObjects([modDict valueForKey:firstNameKey], @"freddie", @"Modification block should alter value");
+    
+    [dict setValue:@"WOWZA" forKey:firstNameKey];
+    modDict = [dict dictionaryByModifyingWithBlock:lowercaseFirstName];
+    STAssertEqualObjects([modDict valueForKey:firstNameKey], @"wowza", @"Modification block should alter value");
 }
 
 @end
