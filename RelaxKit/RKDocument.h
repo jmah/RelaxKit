@@ -14,8 +14,11 @@
 
 @interface RKDocument : NSObject
 
-@property (readonly, nonatomic) RKRevision *currentRevision;
-@property (readonly, nonatomic) RKDictionary *root;
+- (id)initWithIdentifier:(NSString *)identifierOrNil;
+
+@property (readonly, nonatomic, copy) NSString *identifier;
+@property (readonly, nonatomic, retain) RKRevision *currentRevision;
+@property (readonly, nonatomic, copy) RKDictionary *root;
 - (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
 
 @end
