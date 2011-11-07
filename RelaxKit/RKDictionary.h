@@ -14,7 +14,7 @@
 @interface RKDictionary : NSObject <NSCopying>
 
 @property (readonly, nonatomic, weak) RKDocument *document;
-- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modDictBlock;
+- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
 
 // To be clear, the main interface to this class is:
 - (id)valueForKey:(NSString *)key;

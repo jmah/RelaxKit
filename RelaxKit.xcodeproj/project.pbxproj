@@ -18,9 +18,9 @@
 		2859BD201467BB5E0067F2A5 /* RKRevision.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD1E1467BB5E0067F2A5 /* RKRevision.m */; };
 		2859BD221467BEA60067F2A5 /* RKRevision-Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD211467BEA60067F2A5 /* RKRevision-Private.h */; };
 		2859BD251467C12F0067F2A5 /* RKRevisionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD241467C12F0067F2A5 /* RKRevisionTests.m */; };
-		2859BD281467C3510067F2A5 /* RKDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD261467C3510067F2A5 /* RKDocument.h */; };
+		2859BD281467C3510067F2A5 /* RKDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD261467C3510067F2A5 /* RKDocument.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2859BD291467C3510067F2A5 /* RKDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD271467C3510067F2A5 /* RKDocument.m */; };
-		2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD2A1467C46F0067F2A5 /* RKDictionary.h */; };
+		2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD2A1467C46F0067F2A5 /* RKDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2859BD2D1467C46F0067F2A5 /* RKDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD2B1467C46F0067F2A5 /* RKDictionary.m */; };
 /* End PBXBuildFile section */
 

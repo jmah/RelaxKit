@@ -16,6 +16,6 @@
 
 @property (readonly, nonatomic) RKRevision *currentRevision;
 @property (readonly, nonatomic) RKDictionary *root;
-- (BOOL)modifyWithBlock:(BOOL (^)(RKDocument *))modBlock;
+- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
 
 @end

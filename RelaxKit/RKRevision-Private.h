@@ -8,13 +8,13 @@
 
 #import "RKRevision.h"
 
-@class RKDocument;
+@class RKDictionary;
 
 
 @interface RKUnsavedRev : RKRevision
 - (id)initAsSuccessorOfRev:(RKRevision *)prevRev;
-- (void)appendModification:(BOOL (^)(RKDocument *))modBlock;
-- (BOOL)performModificationWithDocument:(RKDocument *)doc;
+- (void)appendModification:(BOOL (^)(RKDictionary *))modBlock;
+- (BOOL)performModificationWithDictionary:(RKDictionary *)dict;
 @end
 
 
