@@ -10,8 +10,6 @@
 
 
 @interface RKDictionary (RKPrivate)
-// If this returns false, the contents of the dictionary are undefined. (Make a copy before calling this method.)
-- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
 - (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
 - (BOOL)insideModificationBlock;
 @end

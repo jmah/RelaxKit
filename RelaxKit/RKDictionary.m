@@ -68,22 +68,16 @@
 
 - (RKDictionary *)dictionaryByModifyingWithBlock:(RKModificationBlock)modBlock;
 {
-    RKDictionary *attempt = [self copy];
-    if (![attempt modifyWithBlock:modBlock])
+    RKDictionary *candidate = [self copy];
+    candidate->_insideModificationBlockRef++;
+    if (!modBlock(candidate))
         return nil;
-    return attempt;
+    candidate->_insideModificationBlockRef--;
+    return candidate;
 }
 
 
 #pragma mark RKDictionary (RKPrivate)
-
-- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
-{
-    _insideModificationBlockRef++;
-    BOOL success = modBlock(self);
-    _insideModificationBlockRef--;
-    return success;
-}
 
 - (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
 {

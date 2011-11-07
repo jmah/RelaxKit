@@ -58,35 +58,33 @@ static NSString *const salesCountKey = @"salesCount";
     RKDictionary *dict = [[RKDictionary alloc] init];
     STAssertFalse(dict.insideModificationBlock, NULL);
     
-    BOOL modSuccess = [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
-        STAssertTrue(dict == localDict, @"Argument should be same as receiver");
+    RKDictionary *modDict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
+        STAssertEqualObjects([dict dictionaryRepresentation], [localDict dictionaryRepresentation], @"Argument should have equal values as receiver");
         STAssertTrue(localDict.insideModificationBlock, NULL);
+        STAssertFalse(dict.insideModificationBlock, NULL);
         return YES;
     }];
+    STAssertNotNil(modDict, NULL);
     STAssertFalse(dict.insideModificationBlock, NULL);
-    STAssertTrue(modSuccess, NULL);
+    STAssertFalse(modDict.insideModificationBlock, NULL);
     
-    modSuccess = [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+    modDict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
         return NO;
     }];
-    STAssertFalse(modSuccess, NULL);
+    STAssertNil(modDict, NULL);
     
-    [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+    dict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
         [localDict setValue:@"Freddie" forKey:firstNameKey];
         return YES;
     }];
     STAssertTrue([dict count] == 1, @"Setting new value should increase count");
     STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Getter should return equal value");
     
+    
     __block NSDictionary *beforeDict;
-    [dict modifyWithBlock:^BOOL(RKDictionary *localDict) {
+    dict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
         beforeDict = [localDict dictionaryRepresentation];
-        [localDict modifyWithBlock:^BOOL(RKDictionary *innerDict) {
-            STAssertTrue(dict.insideModificationBlock, NULL);
-            STAssertTrue(innerDict.insideModificationBlock, NULL);
-            [localDict setValue:@"Mercury" forKey:lastNameKey];
-            return YES;
-        }];
+        [localDict setValue:@"Mercury" forKey:lastNameKey];
         return YES;
     }];
     STAssertTrue([beforeDict count] == 1, @"Dictionary representation should be immutable snapshot");
@@ -96,7 +94,7 @@ static NSString *const salesCountKey = @"salesCount";
     RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKey:firstNameKey];
     STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Generating modification block shouldn't have side effects");
     
-    RKDictionary *modDict = [dict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
+    modDict = [dict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
     STAssertNotNil(modDict, @"Modification should succeed with old value");
     STAssertEqualObjects([modDict valueForKey:firstNameKey], @"Farrokh", @"Modification block should alter value");
     
