@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		280415881467C6D1001FD37D /* RKDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 280415871467C6D1001FD37D /* RKDictionaryTests.m */; };
+		2804158B1467D3E8001FD37D /* RKDictionary-Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2804158A1467D3E8001FD37D /* RKDictionary-Private.h */; };
 		2859BCF01467B9140067F2A5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2859BCEF1467B9140067F2A5 /* Cocoa.framework */; };
 		2859BCFA1467B9140067F2A5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2859BCF81467B9140067F2A5 /* InfoPlist.strings */; };
 		2859BD061467B9140067F2A5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2859BD051467B9140067F2A5 /* SenTestingKit.framework */; };
@@ -38,6 +39,7 @@
 /* Begin PBXFileReference section */
 		280415861467C6D1001FD37D /* RKDictionaryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDictionaryTests.h; sourceTree = "<group>"; };
 		280415871467C6D1001FD37D /* RKDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryTests.m; sourceTree = "<group>"; };
+		2804158A1467D3E8001FD37D /* RKDictionary-Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKDictionary-Private.h"; sourceTree = "<group>"; };
 		2859BCEC1467B9140067F2A5 /* RelaxKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RelaxKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2859BCEF1467B9140067F2A5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2859BCF21467B9140067F2A5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -133,6 +135,7 @@
 				2859BD261467C3510067F2A5 /* RKDocument.h */,
 				2859BD271467C3510067F2A5 /* RKDocument.m */,
 				2859BD2A1467C46F0067F2A5 /* RKDictionary.h */,
+				2804158A1467D3E8001FD37D /* RKDictionary-Private.h */,
 				2859BD2B1467C46F0067F2A5 /* RKDictionary.m */,
 				2859BCF61467B9140067F2A5 /* Supporting Files */,
 			);
@@ -182,6 +185,7 @@
 				2859BD221467BEA60067F2A5 /* RKRevision-Private.h in Headers */,
 				2859BD281467C3510067F2A5 /* RKDocument.h in Headers */,
 				2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */,
+				2804158B1467D3E8001FD37D /* RKDictionary-Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

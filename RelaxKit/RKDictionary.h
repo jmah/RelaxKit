@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+@class RKDictionary;
 @class RKDocument;
+
+typedef BOOL (^RKModificationBlock)(RKDictionary *localDict);
 
 
 @interface RKDictionary : NSObject <NSCopying>
@@ -21,8 +24,7 @@
 - (NSUInteger)count;
 - (NSDictionary *)dictionaryRepresentation;
 
-- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
-- (BOOL)insideModificationBlock;
+- (RKDictionary *)dictionaryByModifyingWithBlock:(RKModificationBlock)modBlock;
 
 // To be clear, the main interface to this class is:
 - (id)valueForKey:(NSString *)key;

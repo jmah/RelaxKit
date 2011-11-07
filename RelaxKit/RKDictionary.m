@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Jonathon Mah. All rights reserved.
 //
 
-#import "RKDictionary.h"
+#import "RKDictionary-Private.h"
 #import "RKDocument.h"
 
 
@@ -41,7 +41,7 @@
 }
 
 
-#pragma mark API
+#pragma mark RKDictionary
 
 - (id)init;
 {
@@ -66,12 +66,41 @@
     return [NSDictionary dictionaryWithDictionary:_backingDictionary];
 }
 
-- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
+- (RKDictionary *)dictionaryByModifyingWithBlock:(RKModificationBlock)modBlock;
+{
+    RKDictionary *attempt = [self copy];
+    if (![attempt modifyWithBlock:modBlock])
+        return nil;
+    return attempt;
+}
+
+
+#pragma mark RKDictionary (RKPrivate)
+
+- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
 {
     _insideModificationBlockRef++;
     BOOL success = modBlock(self);
     _insideModificationBlockRef--;
     return success;
+}
+
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
+{
+    id oldValue = [self valueForKey:key];
+    
+    // If unchanged, always succeed (and avoid capturing unneeded values)
+    if ((oldValue == newValue) || [oldValue isEqual:newValue])
+        return [^BOOL(RKDictionary *localDict) { return YES; } copy];
+    
+    return [^BOOL(RKDictionary *localDict) {
+        id curValue = [localDict valueForKey:key];
+        if ([curValue isEqual:oldValue]) {
+            [localDict setValue:newValue forKey:key];
+            return YES;
+        }
+        return (curValue == newValue) || [curValue isEqual:newValue];
+    } copy];
 }
 
 - (BOOL)insideModificationBlock;

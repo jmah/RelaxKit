@@ -8,6 +8,7 @@
 
 #import "RKDictionaryTests.h"
 #import <RelaxKit/RelaxKit.h>
+#import "RKDictionary-Private.h"
 
 
 @implementation RKDictionaryTests
@@ -86,6 +87,38 @@
     STAssertTrue([beforeDict count] == 1, @"Dictionary representation should be immutable snapshot");
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
     STAssertEqualObjects([dict valueForKey:@"lastName"], @"Mercury", @"Getter should return equal value");
+    
+    RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKey:@"firstName"];
+    STAssertEqualObjects([dict valueForKey:@"firstName"], @"Freddie", @"Generating modification block shouldn't have side effects");
+    
+    RKDictionary *modDict = [dict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
+    STAssertNotNil(modDict, @"Modification should succeed with old value");
+    STAssertEqualObjects([modDict valueForKey:@"firstName"], @"Farrokh", @"Modification block should have changed value");
+    
+    RKDictionary *scratchDict = [dict copy];
+    [scratchDict setValue:@"Farrokh" forKey:@"firstName"];
+    modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
+    STAssertNotNil(modDict, @"Modification should succeed if already at new value");
+    STAssertEqualObjects([modDict valueForKey:@"firstName"], @"Farrokh", @"Modification block should have changed value");
+    
+    [scratchDict setValue:@"completelyDifferent" forKey:@"firstName"];
+    modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
+    STAssertNil(modDict, @"Modification should fail if value is neither old nor new");
+    
+    [scratchDict setValue:nil forKey:@"firstName"];
+    modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
+    STAssertNil(modDict, @"Modification should fail if value is neither old nor new");
+    
+    RKModificationBlock noRealChange = [dict modificationBlockToSetValue:@"Freddie" forKey:@"firstName"];
+    [scratchDict setValue:@"completelyDifferent" forKey:@"firstName"];
+    modDict = [scratchDict dictionaryByModifyingWithBlock:noRealChange];
+    STAssertNotNil(modDict, @"Any modification should succeed if setter was identity");
+    STAssertEqualObjects([modDict valueForKey:@"firstName"], @"completelyDifferent", @"Any modification should succeed if setter was identity");
+    
+    [scratchDict setValue:nil forKey:@"firstName"];
+    modDict = [scratchDict dictionaryByModifyingWithBlock:noRealChange];
+    STAssertNotNil(modDict, @"Any modification should succeed if setter was identity");
+    STAssertTrue([modDict count] == 1, @"Any modification should succeed if setter was identity");
 }
 
 @end
