@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Jonathon Mah. All rights reserved.
 //
 
-#import "RKRevision.h"
+#import "RKRevision-Private.h"
 
 
 @implementation RKRevision

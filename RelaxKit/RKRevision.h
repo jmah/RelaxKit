@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 
 
-@interface RKRevision : NSObject
+@interface RKRevision : NSObject <NSCopying>
+
+@property (readonly, getter=isSaved) BOOL saved;
+
+- (NSUInteger)hash;
+- (BOOL)isEqual:(id)object;
+- (NSComparisonResult)compare:(RKRevision *)otherRevision;
 
 @end
