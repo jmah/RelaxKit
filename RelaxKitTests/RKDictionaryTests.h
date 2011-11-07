@@ -11,6 +11,6 @@
 
 @interface RKDictionaryTests : SenTestCase
 
-- (void)testBasicStringValues;
+- (void)testDictionarylike;
 
 @end

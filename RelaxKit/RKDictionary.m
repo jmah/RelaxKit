@@ -36,25 +36,33 @@
 
 - (id)copyWithZone:(NSZone *)zone;
 {
-    RKDictionary *copy = [[[self class] alloc] init];
-    copy->_backingDictionary = [NSMutableDictionary dictionaryWithDictionary:_backingDictionary];
-    return copy;
+    return [[[self class] alloc] initWithDictionary:_backingDictionary];
 }
 
 
 #pragma mark API
 
-- (id)init; // Designated initializer
+- (id)init;
+{
+    return [self initWithDictionary:nil];
+}
+
+- (id)initWithDictionary:(NSDictionary *)nsdictOrNil; // Designated initializer
 {
     if (!(self = [super init]))
         return nil;
-    _backingDictionary = [[NSMutableDictionary alloc] init];
+    _backingDictionary = [[NSMutableDictionary alloc] initWithDictionary:nsdictOrNil];
     return self;
 }
 
 - (NSUInteger)count;
 {
     return [_backingDictionary count];
+}
+
+- (NSDictionary *)dictionaryRepresentation;
+{
+    return [NSDictionary dictionaryWithDictionary:_backingDictionary];
 }
 
 @end
