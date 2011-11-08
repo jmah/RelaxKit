@@ -18,6 +18,20 @@
 @synthesize parent = _parent;
 @synthesize keyInParent = _keyInParent;
 
+#pragma mark <NSObject>
+
+- (BOOL)isEqual:(id)other;
+{
+    if ([other isKindOfClass:[RKDictionary class]]) {
+        RKDictionary *otherDict = other;
+        return [_backingDictionary isEqual:otherDict->_backingDictionary];
+    }
+    return NO;
+}
+
+- (NSUInteger)hash;
+{ return [_backingDictionary hash]; }
+
 #pragma mark NSObject (NSKeyValueCoding)
 
 + (BOOL)accessInstanceVariablesDirectly;

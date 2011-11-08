@@ -44,13 +44,15 @@ static NSString *const salesCountKey = @"salesCount";
     RKDictionary *copy = [dict copy];
     
     STAssertEqualObjects([dict dictionaryRepresentation], [copy dictionaryRepresentation], @"Copies should have equal dictionary representations");
+    STAssertEqualObjects(dict, copy, @"Copies should compare equal");
     
     [dict setValue:@"Farrokh" forKey:firstNameKey];
     STAssertTrue([dict count] == 2, @"Setting value for old key should keep count constant");
     STAssertEqualObjects([dict valueForKey:firstNameKey], @"Farrokh", @"Getter should return equal value");
     STAssertEqualObjects([copy valueForKey:firstNameKey], @"Freddie", @"Copy should have separate mutation");
     
-    STAssertFalse([[dict dictionaryRepresentation] isEqual:[copy dictionaryRepresentation]], @"Copies should have equal dictionary representations");
+    STAssertFalse([[dict dictionaryRepresentation] isEqual:[copy dictionaryRepresentation]], @"Copies should be independent");
+    STAssertFalse([dict isEqual:copy], @"Copies should be independent");
 }
 
 - (void)testModificationBlocks;
@@ -58,7 +60,7 @@ static NSString *const salesCountKey = @"salesCount";
     RKDictionary *dict = [[RKDictionary alloc] init];
     
     RKDictionary *modDict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
-        STAssertEqualObjects([dict dictionaryRepresentation], [localDict dictionaryRepresentation], @"Argument should have equal values as receiver");
+        STAssertEqualObjects(dict, localDict, @"Argument should have equal values as receiver");
         return YES;
     }];
     STAssertNotNil(modDict, NULL);
