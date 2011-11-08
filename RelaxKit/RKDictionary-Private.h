@@ -11,8 +11,11 @@
 
 @interface RKDictionary ()
 
-@property (nonatomic, weak) RKDictionary *parent;
+@property (readwrite, nonatomic, weak) RKDocument *document;
 
-- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
+@property (nonatomic, weak) RKDictionary *parent;
+@property (nonatomic, copy) NSString *keyInParent;
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKeyPath:(NSString *)keyPath;
 - (BOOL)insideModificationBlock;
+
 @end

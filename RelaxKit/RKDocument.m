@@ -7,9 +7,13 @@
 //
 
 #import "RKDocument-Private.h"
+#import "RKDictionary-Private.h"
+#import "RKRevision-Private.h"
 
 
-@implementation RKDocument
+@implementation RKDocument {
+    NSUInteger _insideModificationBlockRef;
+}
 
 @synthesize identifier = _identifier;
 @synthesize currentRevision = _currentRevision;
@@ -22,12 +26,43 @@
 {
     if (!(self = [super init]))
         return nil;
+    if (identifierOrNil && [identifierOrNil length] == 0)
+        return nil;
+    
     _identifier = [identifierOrNil copy] ? : [[self class] generateIdentifier];
+    self.root = [[RKDictionary alloc] init];
+    self.currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:nil];
     return self;
 }
 
+- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
+{
+    _insideModificationBlockRef++;
+    // TODO: Save old values in case modification fails
+    // TODO: Defer KVO until atomic everything, or all reverted
+    BOOL success = modBlock(self.root);
+    _insideModificationBlockRef--;
+    return success;
+}
 
-#pragma mark RKDocument (RKPrivate)
+
+#pragma mark RKDocument: Private
+
+- (void)setRoot:(RKDictionary *)root;
+{
+    NSParameterAssert(root);
+    _root.document = nil;
+    _root = [root copy];
+    _root.document = self;
+}
+
+- (BOOL)insideModificationBlock;
+{
+    return _insideModificationBlockRef > 0;
+}
+
+
+#pragma mark RKDocument: Private: Identifier Generation
 
 + (uint16_t)randomUint16Min:(uint16_t)minVal max:(uint16_t)maxVal;
 {

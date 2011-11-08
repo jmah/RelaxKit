@@ -12,5 +12,6 @@
 @interface RKDocumentTests : SenTestCase
 
 - (void)testIdentifierGeneration;
+- (void)testKVCChangeCapture;
 
 @end

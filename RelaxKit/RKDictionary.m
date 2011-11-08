@@ -7,16 +7,16 @@
 //
 
 #import "RKDictionary-Private.h"
-#import "RKDocument.h"
+#import "RKDocument-Private.h"
 
 
 @implementation RKDictionary {
     NSMutableDictionary *_backingDictionary;
-    NSUInteger _insideModificationBlockRef;
 }
 
 @synthesize document = _document;
 @synthesize parent = _parent;
+@synthesize keyInParent = _keyInParent;
 
 #pragma mark NSObject (NSKeyValueCoding)
 
@@ -28,16 +28,50 @@
     return [_backingDictionary valueForKey:key];
 }
 
+- (void)setValue:(id)value forKeyPath:(NSString *)keyPath;
+{
+    RKDocument *strongDocument = self.document;
+    BOOL needsModificationBlock = (strongDocument && ![strongDocument insideModificationBlock]);
+    if (needsModificationBlock) {
+        BOOL success = [strongDocument modifyWithBlock:[self modificationBlockToSetValue:value forKeyPath:keyPath]];
+        if (!success)
+            [NSException raise:NSInternalInconsistencyException format:@"Failed to apply immediate modification block in -[RKDictionary setValue:%@ forKeyPath:%@]. This is either a logic error, or the dictionary was modified concurrently (which is illegal).", value, keyPath];
+        
+    } else {
+        [super setValue:value forKeyPath:keyPath];
+    }
+}
+
 - (void)setValue:(id)value forKey:(NSString *)key;
 {
-    [self willChangeValueForKey:key];
-    if ([value isKindOfClass:[RKDictionary class]]) {
-        RKDictionary *dictValue = [value copy];
-        dictValue.parent = self;
-        value = dictValue;
+    RKDocument *strongDocument = self.document;
+    BOOL needsModificationBlock = (strongDocument && ![strongDocument insideModificationBlock]);
+    if (needsModificationBlock) {
+        // Translate into a root-relative -setValue:forKeyPath:
+        NSMutableArray *keyAcc = [NSMutableArray arrayWithObject:key];
+        RKDictionary *curAncestor = self;
+        while ((curAncestor.parent)) {
+            [keyAcc insertObject:curAncestor.keyInParent atIndex:0];
+            curAncestor = curAncestor.parent;
+        }
+        NSString *keyPath = [keyAcc componentsJoinedByString:@"."];
+        
+        // This will create the modification in the document
+        [self.document.root setValue:value forKeyPath:keyPath];
+        
+    } else {
+        if ([value isKindOfClass:[RKDictionary class]]) {
+            RKDictionary *dictValue = [value copy];
+            dictValue.parent = self;
+            dictValue.keyInParent = key;
+            dictValue.document = strongDocument;
+            value = dictValue;
+        }
+        
+        [self willChangeValueForKey:key];
+        [_backingDictionary setValue:value forKey:key];
+        [self didChangeValueForKey:key];
     }
-    [_backingDictionary setValue:value forKey:key];
-    [self didChangeValueForKey:key];
 }
 
 
@@ -77,37 +111,31 @@
 - (RKDictionary *)dictionaryByModifyingWithBlock:(RKModificationBlock)modBlock;
 {
     RKDictionary *candidate = [self copy];
-    candidate->_insideModificationBlockRef++;
     if (!modBlock(candidate))
         return nil;
-    candidate->_insideModificationBlockRef--;
     return candidate;
 }
 
 
-#pragma mark RKDictionary (RKPrivate)
+#pragma mark RKDictionary: Private
 
-- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKeyPath:(NSString *)keyPath;
 {
-    id oldValue = [self valueForKey:key];
+    NSAssert(!self.keyInParent, @"-modificationBlockToSetValue:forKeyPath: should only be called on a root dictionary");
+    id oldValue = [self valueForKeyPath:keyPath];
     
     // If unchanged, always succeed (and avoid capturing unneeded values)
     if ((oldValue == newValue) || [oldValue isEqual:newValue])
-        return [^BOOL(RKDictionary *localDict) { return YES; } copy];
+        return [^BOOL(RKDictionary *localRoot) { return YES; } copy];
     
-    return [^BOOL(RKDictionary *localDict) {
-        id curValue = [localDict valueForKey:key];
-        if ([curValue isEqual:oldValue]) {
-            [localDict setValue:newValue forKey:key];
+    return [^BOOL(RKDictionary *localRoot) {
+        id curValue = [localRoot valueForKeyPath:keyPath];
+        if ((curValue == oldValue) || [curValue isEqual:oldValue]) {
+            [localRoot setValue:newValue forKeyPath:keyPath];
             return YES;
         }
         return (curValue == newValue) || [curValue isEqual:newValue];
     } copy];
-}
-
-- (BOOL)insideModificationBlock;
-{
-    return _insideModificationBlockRef > 0;
 }
 
 @end

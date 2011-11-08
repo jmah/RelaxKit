@@ -56,17 +56,12 @@ static NSString *const salesCountKey = @"salesCount";
 - (void)testModificationBlocks;
 {
     RKDictionary *dict = [[RKDictionary alloc] init];
-    STAssertFalse(dict.insideModificationBlock, NULL);
     
     RKDictionary *modDict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
         STAssertEqualObjects([dict dictionaryRepresentation], [localDict dictionaryRepresentation], @"Argument should have equal values as receiver");
-        STAssertTrue(localDict.insideModificationBlock, NULL);
-        STAssertFalse(dict.insideModificationBlock, NULL);
         return YES;
     }];
     STAssertNotNil(modDict, NULL);
-    STAssertFalse(dict.insideModificationBlock, NULL);
-    STAssertFalse(modDict.insideModificationBlock, NULL);
     
     modDict = [dict dictionaryByModifyingWithBlock:^BOOL(RKDictionary *localDict) {
         return NO;
@@ -91,7 +86,7 @@ static NSString *const salesCountKey = @"salesCount";
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
     STAssertEqualObjects([dict valueForKey:lastNameKey], @"Mercury", @"Getter should return equal value");
     
-    RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKey:firstNameKey];
+    RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKeyPath:firstNameKey];
     STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Generating modification block shouldn't have side effects");
     
     modDict = [dict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
@@ -112,7 +107,7 @@ static NSString *const salesCountKey = @"salesCount";
     modDict = [scratchDict dictionaryByModifyingWithBlock:setFreddieToFarrokh];
     STAssertNil(modDict, @"Modification should fail if value is neither old nor new");
     
-    RKModificationBlock noRealChange = [dict modificationBlockToSetValue:@"Freddie" forKey:firstNameKey];
+    RKModificationBlock noRealChange = [dict modificationBlockToSetValue:@"Freddie" forKeyPath:firstNameKey];
     [scratchDict setValue:@"completelyDifferent" forKey:firstNameKey];
     modDict = [scratchDict dictionaryByModifyingWithBlock:noRealChange];
     STAssertNotNil(modDict, @"Any modification should succeed if setter was identity");
@@ -164,7 +159,9 @@ static NSString *const salesCountKey = @"salesCount";
     STAssertEquals([parent valueForKeyPath:childFirstNameKey], @"Stanley", @"-valueForKeyPath: should traverse child dictionaries");
     
     STAssertNil(prospectiveChild.parent, @"Original dictionary should be unchanged");
+    STAssertNil(prospectiveChild.keyInParent, @"Original dictionary should be unchanged");
     STAssertTrue(actualChild.parent == parent, @"Child value's parent should be set");
+    STAssertEqualObjects(actualChild.keyInParent, childDictKey, @"Child value's key-in-parent should be set");
 }
 
 @end

@@ -9,8 +9,14 @@
 #import "RKDocument.h"
 
 
-@interface RKDocument (RKPrivate)
+@interface RKDocument ()
 
+@property (readwrite, nonatomic, retain) RKRevision *currentRevision;
+@property (readwrite, nonatomic, copy) RKDictionary *root;
+
+- (BOOL)insideModificationBlock;
+
+#pragma mark Identifier Generation
 + (uint16_t)randomUint16Min:(uint16_t)minVal max:(uint16_t)maxVal; // inclusive
 + (uint32_t)randomUint32;
 + (NSString *)generateIdentifier;
