@@ -31,7 +31,7 @@
     
     _identifier = [identifierOrNil copy] ? : [[self class] generateIdentifier];
     self.root = [[RKDictionary alloc] init];
-    self.currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:nil];
+    _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:nil];
     return self;
 }
 
@@ -40,7 +40,10 @@
     _insideModificationBlockRef++;
     // TODO: Save old values in case modification fails
     // TODO: Defer KVO until atomic everything, or all reverted
+    [self willChangeValueForKey:@"currentRevision"];
     BOOL success = modBlock(self.root);
+    _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:self.currentRevision];
+    [self didChangeValueForKey:@"currentRevision"];
     _insideModificationBlockRef--;
     return success;
 }

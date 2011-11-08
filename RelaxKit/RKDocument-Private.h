@@ -9,9 +9,8 @@
 #import "RKDocument.h"
 
 
-@interface RKDocument ()
+@interface RKDocument (/* Private */)
 
-@property (readwrite, nonatomic, retain) RKRevision *currentRevision;
 @property (readwrite, nonatomic, copy) RKDictionary *root;
 
 - (BOOL)insideModificationBlock;

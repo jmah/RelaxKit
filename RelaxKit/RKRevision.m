@@ -13,6 +13,13 @@
 
 @dynamic saved; // For subclasses to implement
 
+@synthesize previousRev = _previousRev;
+
+#pragma mark <NSObject>
+
+- (id)init;
+{ NSAssert(NO, @"Bad initializer, use -initAsSuccessorOfRev:"); return nil; }
+
 #pragma mark <NSCopying>
 
 - (id)copyWithZone:(NSZone *)zone;
@@ -20,35 +27,6 @@
 
 
 #pragma mark RKRevision
-
-- (NSComparisonResult)compare:(RKRevision *)otherRevision;
-{
-    NSParameterAssert([otherRevision isKindOfClass:[RKRevision class]]);
-    // <# TODO #> stubbed
-    return NSOrderedAscending;
-}
-
-@end
-
-
-
-@implementation RKUnsavedRev
-
-@synthesize previousRev = _previousRev;
-
-#pragma mark NSObject
-
-- (id)init;
-{ NSAssert(NO, @"Bad initializer, use -initAsSuccessorOfRev:"); return nil; }
-
-
-#pragma mark RKRevision
-
-- (BOOL)isSaved;
-{ return NO; }
-
-
-#pragma mark RKUnsavedRev
 
 - (id)initAsSuccessorOfRev:(RKRevision *)prevRevOrNil;
 {
@@ -58,6 +36,47 @@
     return self;
 }
 
+- (NSComparisonResult)compare:(RKRevision *)otherRevision;
+{
+    NSParameterAssert([otherRevision isKindOfClass:[RKRevision class]]);
+    if (otherRevision == self)
+        return NSOrderedSame;
+    if (otherRevision == self.previousRev)
+        return NSOrderedDescending;
+    if (otherRevision.previousRev == self)
+        return NSOrderedAscending;
+    
+    NSMutableSet *myAncestors = [NSMutableSet set];
+    RKRevision *ancestor = self;
+    while ((ancestor = ancestor.previousRev))
+        [myAncestors addObject:ancestor];
+    
+    if ([myAncestors containsObject:otherRevision])
+        return NSOrderedDescending;
+    
+    RKRevision *otherAncestor = otherRevision;
+    while ((otherAncestor = otherAncestor.previousRev))
+        if (otherAncestor == self)
+            return NSOrderedAscending;
+    
+    // On divergent paths; no natural ordering. Should we throw?
+    return NSOrderedSame;
+}
+
+@end
+
+
+
+@implementation RKUnsavedRev
+
+#pragma mark RKRevision
+
+- (BOOL)isSaved;
+{ return NO; }
+
+
+#pragma mark RKUnsavedRev
+
 @end
 
 
@@ -65,7 +84,7 @@
 
 @synthesize identifier = _identifier;
 
-#pragma mark NSObject
+#pragma mark <NSObject>
 
 - (id)init;
 { NSAssert(NO, @"Bad initializer, use -initWithIdentifier:"); return nil; }
@@ -90,9 +109,9 @@
 
 #pragma mark RKSavedRev
 
-- (id)initWithIdentifier:(NSString *)rev;
+- (id)initWithIdentifier:(NSString *)rev asSuccessorOfRev:(RKRevision *)prevRevOrNil;
 {
-    if (!(self = [super init]))
+    if (!(self = [super initAsSuccessorOfRev:prevRevOrNil]))
         return nil;
     if (!rev || [rev length] == 0)
         return nil;

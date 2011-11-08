@@ -53,23 +53,30 @@ typedef BOOL (^KVOBlock)(NSString *keyPath, id object, NSDictionary *change, voi
     STAssertNotNil(firstRev, @"Empty document should have unsaved placeholder revision");
     STAssertFalse(firstRev.saved, @"Empty document should have unsaved placeholder revision");
     
-    __block BOOL kvoFired = NO, docWasInModBlock = NO;
+    __block BOOL firstNameKVOFired = NO, docWasInModBlock = NO;
+    __block NSUInteger revisionKVOFireCount = 0;
     _kvoHandlerBlock = ^BOOL(NSString *keyPath, id object, NSDictionary *change, void *context) {
-        if (context == &kvoFired) {
-            kvoFired = YES;
+        if (context == &firstNameKVOFired) {
+            firstNameKVOFired = YES;
             docWasInModBlock = [doc insideModificationBlock];
+            return YES;
+        } else if (context == &revisionKVOFireCount) {
+            revisionKVOFireCount++;
             return YES;
         }
         return NO;
     };
     
-    [doc.root addObserver:self forKeyPath:firstNameKey options:0 context:&kvoFired];
+    [doc addObserver:self forKeyPath:@"currentRevision" options:0 context:&revisionKVOFireCount];
+    [doc.root addObserver:self forKeyPath:firstNameKey options:0 context:&firstNameKVOFired];
     [doc.root setValue:@"Freddie" forKey:firstNameKey];
-    [doc.root removeObserver:self forKeyPath:firstNameKey context:&kvoFired];
+    [doc.root removeObserver:self forKeyPath:firstNameKey context:&firstNameKVOFired];
+    [doc removeObserver:self forKeyPath:@"currentRevision" context:&revisionKVOFireCount];
     _kvoHandlerBlock = nil;
     
-    STAssertTrue(kvoFired, NULL);
+    STAssertTrue(firstNameKVOFired, NULL);
     STAssertTrue(docWasInModBlock, @"Modification to dictionary should occur within a modification block");
+    STAssertEquals(revisionKVOFireCount, 1ul, @"Revision change should have fired exactly once");
     
     RKRevision *secondRev = doc.currentRevision;
     STAssertFalse(firstRev == secondRev, @"Altering dictionary should give new placeholder revision");
