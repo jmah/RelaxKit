@@ -9,7 +9,10 @@
 #import "RKDictionary.h"
 
 
-@interface RKDictionary (RKPrivate)
+@interface RKDictionary ()
+
+@property (nonatomic, weak) RKDictionary *parent;
+
 - (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
 - (BOOL)insideModificationBlock;
 @end

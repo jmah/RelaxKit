@@ -149,4 +149,22 @@ static NSString *const salesCountKey = @"salesCount";
     STAssertEqualObjects([modDict valueForKey:salesCountKey], [NSNumber numberWithLong:21], @"Modification block should alter value");
 }
 
+- (void)testDictionaryHierarchy;
+{
+    NSString *const childDictKey = @"childDict";
+    RKDictionary *parent = [[RKDictionary alloc] init];
+    
+    RKDictionary *prospectiveChild = [[RKDictionary alloc] init];
+    [prospectiveChild setValue:@"Stanley" forKey:firstNameKey];
+    STAssertNil(prospectiveChild.parent, @"Dictionary should have no initial parent");
+    
+    [parent setValue:prospectiveChild forKey:childDictKey];
+    RKDictionary *actualChild = [parent valueForKey:childDictKey];
+    NSString *const childFirstNameKey = [[NSArray arrayWithObjects:childDictKey, firstNameKey, nil] componentsJoinedByString:@"."];
+    STAssertEquals([parent valueForKeyPath:childFirstNameKey], @"Stanley", @"-valueForKeyPath: should traverse child dictionaries");
+    
+    STAssertNil(prospectiveChild.parent, @"Original dictionary should be unchanged");
+    STAssertTrue(actualChild.parent == parent, @"Child value's parent should be set");
+}
+
 @end

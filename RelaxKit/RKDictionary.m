@@ -16,6 +16,7 @@
 }
 
 @synthesize document = _document;
+@synthesize parent = _parent;
 
 #pragma mark NSObject (NSKeyValueCoding)
 
@@ -30,6 +31,11 @@
 - (void)setValue:(id)value forKey:(NSString *)key;
 {
     [self willChangeValueForKey:key];
+    if ([value isKindOfClass:[RKDictionary class]]) {
+        RKDictionary *dictValue = [value copy];
+        dictValue.parent = self;
+        value = dictValue;
+    }
     [_backingDictionary setValue:value forKey:key];
     [self didChangeValueForKey:key];
 }

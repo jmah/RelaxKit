@@ -13,5 +13,6 @@
 
 - (void)testDictionarylike;
 - (void)testModificationBlocks;
+- (void)testDictionaryHierarchy;
 
 @end
