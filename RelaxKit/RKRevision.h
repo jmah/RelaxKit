@@ -11,10 +11,8 @@
 
 @interface RKRevision : NSObject <NSCopying>
 
-@property (readonly, getter=isSaved) BOOL saved;
+@property (readonly, getter=isSaved, nonatomic) BOOL saved;
 
-- (NSUInteger)hash;
-- (BOOL)isEqual:(id)object;
 - (NSComparisonResult)compare:(RKRevision *)otherRevision;
 
 @end

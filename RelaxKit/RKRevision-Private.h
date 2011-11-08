@@ -12,7 +12,8 @@
 
 
 @interface RKUnsavedRev : RKRevision
-- (id)initAsSuccessorOfRev:(RKRevision *)prevRev;
+- (id)initAsSuccessorOfRev:(RKRevision *)prevRevOrNil;
+@property (readonly, nonatomic, retain) RKRevision *previousRev;
 - (void)appendModification:(BOOL (^)(RKDictionary *))modBlock;
 - (BOOL)performModificationWithDictionary:(RKDictionary *)dict;
 @end
@@ -20,4 +21,5 @@
 
 @interface RKSavedRev : RKRevision
 - (id)initWithIdentifier:(NSString *)rev;
+@property (readonly, nonatomic, copy) NSString *identifier;
 @end
