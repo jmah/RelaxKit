@@ -29,7 +29,9 @@
 
 - (void)setValue:(id)value forKey:(NSString *)key;
 {
+    [self willChangeValueForKey:key];
     [_backingDictionary setValue:value forKey:key];
+    [self didChangeValueForKey:key];
 }
 
 
