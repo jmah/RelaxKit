@@ -78,6 +78,15 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
 
 #pragma mark <RKCollection>
 
+- (id)mutableCopyWithKey:(NSString *)key inParent:(id <RKCollection>)parentCollection ofDocument:(RKDocument *)document;
+{
+    RKMutableDictionary *copy = [self mutableCopy];
+    copy->_keyInParent = [key copy];
+    copy->_parentCollection = parentCollection;
+    copy->_document = document;
+    return copy;
+}
+
 - (NSString *)keyPathFromRootCollection;
 {
     if (!self.keyInParent)
@@ -186,13 +195,8 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
 - (id)prepareSetValue:(id)value forKey:(NSString *)key;
 {
     // Collections are always copied
-    if ([value conformsToProtocol:@protocol(RKCollection)]) {
-        id <RKCollection> collection = [value mutableCopy];
-        collection.parentCollection = self;
-        collection.keyInParent = key;
-        collection.document = self.document;
-        return collection;
-    }
+    if ([value conformsToProtocol:@protocol(RKCollection)])
+        return [value mutableCopyWithKey:key inParent:self ofDocument:self.document];
     
     switch ([self associationTypeForKey:key]) {
         case RKAssociationCopy:

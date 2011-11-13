@@ -21,10 +21,10 @@ typedef BOOL (^RKModificationBlock)(id /*<RKCollection>*/ localCollection);
 
 @protocol RKCollection <NSObject, NSCopying, NSMutableCopying>
 
-@property (nonatomic, weak) RKDocument *document;
-
-@property (nonatomic, copy) NSString *keyInParent;
-@property (nonatomic, weak) id <RKCollection> parentCollection;
+@property (readonly, nonatomic, weak) RKDocument *document;
+@property (readonly, nonatomic, copy) NSString *keyInParent;
+@property (readonly, nonatomic, weak) id <RKCollection> parentCollection;
+- (id)mutableCopyWithKey:(NSString *)key inParent:(id <RKCollection>)parentCollection ofDocument:(RKDocument *)document;
 
 - (NSString *)keyPathFromRootCollection;
 

@@ -28,7 +28,7 @@
         return nil;
     
     _identifier = [identifierOrNil copy] ? : [[self class] generateIdentifier];
-    self.root = [[RKMutableDictionary alloc] init];
+    _root = [[[RKMutableDictionary alloc] init] mutableCopyWithKey:nil inParent:nil ofDocument:self];
     _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:nil];
     return self;
 }
@@ -64,17 +64,6 @@
         }
         return (curValue == newValue) || [curValue isEqual:newValue];
     } copy];
-}
-
-
-#pragma mark RKDocument: Private
-
-- (void)setRoot:(RKMutableDictionary *)root;
-{
-    NSParameterAssert(root);
-    _root.document = nil;
-    _root = [root mutableCopy];
-    _root.document = self;
 }
 
 
