@@ -94,6 +94,15 @@
     STAssertTrue([dict count] == 1, @"Setting new value should increase count");
     STAssertEqualObjects([dict valueForKey:FN], @"Freddie", @"Getter should return equal value");
     
+    modResult = [dict modifyWithBlock:^BOOL(RKMutableDictionary *localDict) {
+        [localDict setValue:@"ZZZ" forKey:FN];
+        [localDict setValue:nil forKey:FN];
+        return NO;
+    }];
+    STAssertFalse(modResult, NULL);
+    STAssertTrue([dict count] == 1, @"Failed modification block should leave dictionary unchanged");
+    STAssertEqualObjects([dict valueForKey:FN], @"Freddie", @"Failed modification block should leave dictionary unchanged");
+    
     
     __block NSDictionary *beforeDict;
     modResult = [dict modifyWithBlock:^BOOL(RKMutableDictionary *localDict) {
