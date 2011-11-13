@@ -165,7 +165,7 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
     NSParameterAssert([key isKindOfClass:[NSString class]]);
     RKDocument *strongDocument = self.document;
     if ([self insideModificationBlock] || !strongDocument) {
-        id preparedValue = [self prepareSetValue:value forKey:key];
+        id preparedValue = [self prepareValue:value forKey:key];
         
         [self willChangeValueForKey:key];
         [self setPrimitiveValue:preparedValue forKey:key];
@@ -189,7 +189,7 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
     [_backingDictionary setValue:preparedValue forKey:key];
 }
 
-- (id)prepareSetValue:(id)value forKey:(NSString *)key;
+- (id)prepareValue:(id)value forKey:(NSString *)key;
 {
     // Promote collections to an <RKCollection> implementation
     if ([value isKindOfClass:[NSDictionary class]])

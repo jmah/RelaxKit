@@ -36,6 +36,6 @@ typedef BOOL (^RKModificationBlock)(id /*<RKCollection>*/ localCollection);
 - (void)setValue:(id)value forKeyPath:(NSString *)keyPath;
 - (void)setPrimitiveValue:(id)preparedValue forKey:(NSString *)key; // No change notifications, no further processing
 
-- (id)prepareSetValue:(id)value forKey:(NSString *)key; // Returns a copy of the value, configuring sub-collections.
+- (id)prepareValue:(id)value forKey:(NSString *)key; // Returns a copy of the value, configuring sub-collections.
 
 @end
