@@ -26,6 +26,9 @@
 		2859BD291467C3510067F2A5 /* RKDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD271467C3510067F2A5 /* RKDocument.m */; };
 		2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD2A1467C46F0067F2A5 /* RKDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2859BD2D1467C46F0067F2A5 /* RKDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD2B1467C46F0067F2A5 /* RKDictionary.m */; };
+		28EFB3A9146F7C4F0063EAA6 /* RKValueStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 28EFB3A7146F7C4F0063EAA6 /* RKValueStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		28EFB3AA146F7C4F0063EAA6 /* RKValueStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EFB3A8146F7C4F0063EAA6 /* RKValueStorage.m */; };
+		28EFB3AE146FA9300063EAA6 /* RKValueStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EFB3AD146FA9300063EAA6 /* RKValueStorageTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +70,10 @@
 		2859BD271467C3510067F2A5 /* RKDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDocument.m; sourceTree = "<group>"; };
 		2859BD2A1467C46F0067F2A5 /* RKDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDictionary.h; sourceTree = "<group>"; };
 		2859BD2B1467C46F0067F2A5 /* RKDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionary.m; sourceTree = "<group>"; };
+		28EFB3A7146F7C4F0063EAA6 /* RKValueStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKValueStorage.h; sourceTree = "<group>"; };
+		28EFB3A8146F7C4F0063EAA6 /* RKValueStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKValueStorage.m; sourceTree = "<group>"; };
+		28EFB3AC146FA9300063EAA6 /* RKValueStorageTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKValueStorageTests.h; sourceTree = "<group>"; };
+		28EFB3AD146FA9300063EAA6 /* RKValueStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKValueStorageTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +150,8 @@
 				2859BD2A1467C46F0067F2A5 /* RKDictionary.h */,
 				2804158A1467D3E8001FD37D /* RKDictionary-Private.h */,
 				2859BD2B1467C46F0067F2A5 /* RKDictionary.m */,
+				28EFB3A7146F7C4F0063EAA6 /* RKValueStorage.h */,
+				28EFB3A8146F7C4F0063EAA6 /* RKValueStorage.m */,
 				2859BCF61467B9140067F2A5 /* Supporting Files */,
 			);
 			path = RelaxKit;
@@ -167,6 +176,8 @@
 				2804158F1467E2AA001FD37D /* RKDocumentTests.m */,
 				280415861467C6D1001FD37D /* RKDictionaryTests.h */,
 				280415871467C6D1001FD37D /* RKDictionaryTests.m */,
+				28EFB3AC146FA9300063EAA6 /* RKValueStorageTests.h */,
+				28EFB3AD146FA9300063EAA6 /* RKValueStorageTests.m */,
 				2859BD0C1467B9140067F2A5 /* Supporting Files */,
 			);
 			path = RelaxKitTests;
@@ -195,6 +206,7 @@
 				2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */,
 				2804158B1467D3E8001FD37D /* RKDictionary-Private.h in Headers */,
 				2804158D1467E17A001FD37D /* RKDocument-Private.h in Headers */,
+				28EFB3A9146F7C4F0063EAA6 /* RKValueStorage.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +320,7 @@
 				2859BD201467BB5E0067F2A5 /* RKRevision.m in Sources */,
 				2859BD291467C3510067F2A5 /* RKDocument.m in Sources */,
 				2859BD2D1467C46F0067F2A5 /* RKDictionary.m in Sources */,
+				28EFB3AA146F7C4F0063EAA6 /* RKValueStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,6 +331,7 @@
 				2859BD251467C12F0067F2A5 /* RKRevisionTests.m in Sources */,
 				280415881467C6D1001FD37D /* RKDictionaryTests.m in Sources */,
 				280415901467E2AA001FD37D /* RKDocumentTests.m in Sources */,
+				28EFB3AE146FA9300063EAA6 /* RKValueStorageTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
