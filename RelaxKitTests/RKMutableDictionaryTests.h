@@ -1,5 +1,5 @@
 //
-//  RKDictionaryTests.h
+//  RKMutableDictionaryTests.h
 //  RelaxKit
 //
 //  Created by Jonathon Mah on 2011-11-06.
@@ -9,7 +9,7 @@
 #import <SenTestingKit/SenTestingKit.h>
 
 
-@interface RKDictionaryTests : SenTestCase
+@interface RKMutableDictionaryTests : SenTestCase
 
 - (void)testDictionarylike;
 - (void)testModificationBlocks;

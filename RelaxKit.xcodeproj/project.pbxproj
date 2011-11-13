@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		280415881467C6D1001FD37D /* RKDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 280415871467C6D1001FD37D /* RKDictionaryTests.m */; };
-		2804158B1467D3E8001FD37D /* RKDictionary-Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2804158A1467D3E8001FD37D /* RKDictionary-Private.h */; };
+		280415881467C6D1001FD37D /* RKMutableDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 280415871467C6D1001FD37D /* RKMutableDictionaryTests.m */; };
 		2804158D1467E17A001FD37D /* RKDocument-Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2804158C1467E17A001FD37D /* RKDocument-Private.h */; };
 		280415901467E2AA001FD37D /* RKDocumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2804158F1467E2AA001FD37D /* RKDocumentTests.m */; };
 		2859BCF01467B9140067F2A5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2859BCEF1467B9140067F2A5 /* Cocoa.framework */; };
@@ -24,8 +23,9 @@
 		2859BD251467C12F0067F2A5 /* RKRevisionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD241467C12F0067F2A5 /* RKRevisionTests.m */; };
 		2859BD281467C3510067F2A5 /* RKDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD261467C3510067F2A5 /* RKDocument.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2859BD291467C3510067F2A5 /* RKDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD271467C3510067F2A5 /* RKDocument.m */; };
-		2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD2A1467C46F0067F2A5 /* RKDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2859BD2D1467C46F0067F2A5 /* RKDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD2B1467C46F0067F2A5 /* RKDictionary.m */; };
+		2859BD2C1467C46F0067F2A5 /* RKMutableDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 2859BD2A1467C46F0067F2A5 /* RKMutableDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2859BD2D1467C46F0067F2A5 /* RKMutableDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 2859BD2B1467C46F0067F2A5 /* RKMutableDictionary.m */; };
+		28EFB3B0146FB6590063EAA6 /* RKCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 28EFB3AF146FB6590063EAA6 /* RKCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,9 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		280415861467C6D1001FD37D /* RKDictionaryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDictionaryTests.h; sourceTree = "<group>"; };
-		280415871467C6D1001FD37D /* RKDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryTests.m; sourceTree = "<group>"; };
-		2804158A1467D3E8001FD37D /* RKDictionary-Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKDictionary-Private.h"; sourceTree = "<group>"; };
+		280415861467C6D1001FD37D /* RKMutableDictionaryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; path = RKMutableDictionaryTests.h; sourceTree = "<group>"; };
+		280415871467C6D1001FD37D /* RKMutableDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableDictionaryTests.m; sourceTree = "<group>"; };
 		2804158C1467E17A001FD37D /* RKDocument-Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKDocument-Private.h"; sourceTree = "<group>"; };
 		2804158E1467E2AA001FD37D /* RKDocumentTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDocumentTests.h; sourceTree = "<group>"; };
 		2804158F1467E2AA001FD37D /* RKDocumentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDocumentTests.m; sourceTree = "<group>"; };
@@ -65,8 +64,9 @@
 		2859BD241467C12F0067F2A5 /* RKRevisionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRevisionTests.m; sourceTree = "<group>"; };
 		2859BD261467C3510067F2A5 /* RKDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDocument.h; sourceTree = "<group>"; };
 		2859BD271467C3510067F2A5 /* RKDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDocument.m; sourceTree = "<group>"; };
-		2859BD2A1467C46F0067F2A5 /* RKDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDictionary.h; sourceTree = "<group>"; };
-		2859BD2B1467C46F0067F2A5 /* RKDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionary.m; sourceTree = "<group>"; };
+		2859BD2A1467C46F0067F2A5 /* RKMutableDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMutableDictionary.h; sourceTree = "<group>"; };
+		2859BD2B1467C46F0067F2A5 /* RKMutableDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableDictionary.m; sourceTree = "<group>"; };
+		28EFB3AF146FB6590063EAA6 /* RKCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCollection.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,15 +134,15 @@
 			isa = PBXGroup;
 			children = (
 				2859BCFC1467B9140067F2A5 /* RelaxKit.h */,
+				28EFB3AF146FB6590063EAA6 /* RKCollection.h */,
 				2859BD1D1467BB5E0067F2A5 /* RKRevision.h */,
 				2859BD211467BEA60067F2A5 /* RKRevision-Private.h */,
 				2859BD1E1467BB5E0067F2A5 /* RKRevision.m */,
 				2859BD261467C3510067F2A5 /* RKDocument.h */,
 				2804158C1467E17A001FD37D /* RKDocument-Private.h */,
 				2859BD271467C3510067F2A5 /* RKDocument.m */,
-				2859BD2A1467C46F0067F2A5 /* RKDictionary.h */,
-				2804158A1467D3E8001FD37D /* RKDictionary-Private.h */,
-				2859BD2B1467C46F0067F2A5 /* RKDictionary.m */,
+				2859BD2A1467C46F0067F2A5 /* RKMutableDictionary.h */,
+				2859BD2B1467C46F0067F2A5 /* RKMutableDictionary.m */,
 				2859BCF61467B9140067F2A5 /* Supporting Files */,
 			);
 			path = RelaxKit;
@@ -165,8 +165,8 @@
 				2859BD241467C12F0067F2A5 /* RKRevisionTests.m */,
 				2804158E1467E2AA001FD37D /* RKDocumentTests.h */,
 				2804158F1467E2AA001FD37D /* RKDocumentTests.m */,
-				280415861467C6D1001FD37D /* RKDictionaryTests.h */,
-				280415871467C6D1001FD37D /* RKDictionaryTests.m */,
+				280415861467C6D1001FD37D /* RKMutableDictionaryTests.h */,
+				280415871467C6D1001FD37D /* RKMutableDictionaryTests.m */,
 				2859BD0C1467B9140067F2A5 /* Supporting Files */,
 			);
 			path = RelaxKitTests;
@@ -192,9 +192,9 @@
 				2859BD1F1467BB5E0067F2A5 /* RKRevision.h in Headers */,
 				2859BD221467BEA60067F2A5 /* RKRevision-Private.h in Headers */,
 				2859BD281467C3510067F2A5 /* RKDocument.h in Headers */,
-				2859BD2C1467C46F0067F2A5 /* RKDictionary.h in Headers */,
-				2804158B1467D3E8001FD37D /* RKDictionary-Private.h in Headers */,
+				2859BD2C1467C46F0067F2A5 /* RKMutableDictionary.h in Headers */,
 				2804158D1467E17A001FD37D /* RKDocument-Private.h in Headers */,
+				28EFB3B0146FB6590063EAA6 /* RKCollection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,7 +307,7 @@
 			files = (
 				2859BD201467BB5E0067F2A5 /* RKRevision.m in Sources */,
 				2859BD291467C3510067F2A5 /* RKDocument.m in Sources */,
-				2859BD2D1467C46F0067F2A5 /* RKDictionary.m in Sources */,
+				2859BD2D1467C46F0067F2A5 /* RKMutableDictionary.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,7 +316,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2859BD251467C12F0067F2A5 /* RKRevisionTests.m in Sources */,
-				280415881467C6D1001FD37D /* RKDictionaryTests.m in Sources */,
+				280415881467C6D1001FD37D /* RKMutableDictionaryTests.m in Sources */,
 				280415901467E2AA001FD37D /* RKDocumentTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

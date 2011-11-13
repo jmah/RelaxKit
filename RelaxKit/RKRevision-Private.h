@@ -8,7 +8,7 @@
 
 #import "RKRevision.h"
 
-@class RKDictionary;
+@class RKMutableDictionary;
 
 
 @interface RKRevision ()
@@ -18,8 +18,8 @@
 
 
 @interface RKUnsavedRev : RKRevision
-- (void)appendModification:(BOOL (^)(RKDictionary *))modBlock;
-- (BOOL)performModificationWithDictionary:(RKDictionary *)dict;
+- (void)appendModification:(BOOL (^)(RKMutableDictionary *))modBlock;
+- (BOOL)performModificationWithDictionary:(RKMutableDictionary *)dict;
 @end
 
 

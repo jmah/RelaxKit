@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RKCollection.h"
 
-@class RKDictionary;
+@class RKMutableDictionary;
 @class RKRevision;
 
 
@@ -18,7 +19,10 @@
 
 @property (readonly, nonatomic, copy) NSString *identifier;
 @property (readonly, nonatomic, retain) RKRevision *currentRevision;
-@property (readonly, nonatomic, copy) RKDictionary *root;
-- (BOOL)modifyWithBlock:(BOOL (^)(RKDictionary *))modBlock;
+@property (readonly, nonatomic, copy) RKMutableDictionary *root;
+
+- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
+
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forRootKeyPath:(NSString *)keyPath;
 
 @end

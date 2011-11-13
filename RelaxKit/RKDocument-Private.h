@@ -11,9 +11,7 @@
 
 @interface RKDocument (/* Private */)
 
-@property (readwrite, nonatomic, copy) RKDictionary *root;
-
-- (BOOL)insideModificationBlock;
+@property (readwrite, nonatomic, copy) RKMutableDictionary *root;
 
 #pragma mark Identifier Generation
 + (uint16_t)randomUint16Min:(uint16_t)minVal max:(uint16_t)maxVal; // inclusive

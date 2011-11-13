@@ -7,13 +7,11 @@
 //
 
 #import "RKDocument-Private.h"
-#import "RKDictionary-Private.h"
+#import "RKMutableDictionary.h"
 #import "RKRevision-Private.h"
 
 
-@implementation RKDocument {
-    NSUInteger _insideModificationBlockRef;
-}
+@implementation RKDocument
 
 @synthesize identifier = _identifier;
 @synthesize currentRevision = _currentRevision;
@@ -30,38 +28,53 @@
         return nil;
     
     _identifier = [identifierOrNil copy] ? : [[self class] generateIdentifier];
-    self.root = [[RKDictionary alloc] init];
+    self.root = [[RKMutableDictionary alloc] init];
     _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:nil];
     return self;
 }
 
 - (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
 {
-    _insideModificationBlockRef++;
-    // TODO: Save old values in case modification fails
-    // TODO: Defer KVO until atomic everything, or all reverted
+    [self.root beginModifications];
     [self willChangeValueForKey:@"currentRevision"];
     BOOL success = modBlock(self.root);
-    _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:self.currentRevision];
+    if (success)
+        _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:self.currentRevision];
     [self didChangeValueForKey:@"currentRevision"];
-    _insideModificationBlockRef--;
+    [self.root commitModificationsKeepingChanges:success];
     return success;
+}
+
+
+#pragma mark RKMutableDictionary
+
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forRootKeyPath:(NSString *)keyPath;
+{
+    id oldValue = [self.root valueForKeyPath:keyPath];
+    
+    // If unchanged, always succeed (and avoid capturing unneeded values)
+    if ((oldValue == newValue) || [oldValue isEqual:newValue])
+        return [^BOOL(RKMutableDictionary *localRoot) { return YES; } copy];
+    
+    return [^BOOL(RKMutableDictionary *localRoot) {
+        id curValue = [localRoot valueForKeyPath:keyPath];
+        if ((curValue == oldValue) || [curValue isEqual:oldValue]) {
+            [localRoot setValue:newValue forKeyPath:keyPath];
+            return YES;
+        }
+        return (curValue == newValue) || [curValue isEqual:newValue];
+    } copy];
 }
 
 
 #pragma mark RKDocument: Private
 
-- (void)setRoot:(RKDictionary *)root;
+- (void)setRoot:(RKMutableDictionary *)root;
 {
     NSParameterAssert(root);
     _root.document = nil;
-    _root = [root copy];
+    _root = [root mutableCopy];
     _root.document = self;
-}
-
-- (BOOL)insideModificationBlock;
-{
-    return _insideModificationBlockRef > 0;
 }
 
 

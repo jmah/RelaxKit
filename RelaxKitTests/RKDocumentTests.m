@@ -8,10 +8,10 @@
 
 #import "RKDocumentTests.h"
 #import <RelaxKit/RelaxKit.h>
-#import "RKDocument-Private.h"
 
 
 static NSString *const firstNameKey = @"firstName";
+static NSString *const lastNameKey = @"lastName";
 
 typedef BOOL (^KVOBlock)(NSString *keyPath, id object, NSDictionary *change, void *context);
 
@@ -53,12 +53,12 @@ typedef BOOL (^KVOBlock)(NSString *keyPath, id object, NSDictionary *change, voi
     STAssertNotNil(firstRev, @"Empty document should have unsaved placeholder revision");
     STAssertFalse(firstRev.saved, @"Empty document should have unsaved placeholder revision");
     
-    __block BOOL firstNameKVOFired = NO, docWasInModBlock = NO;
+    __block BOOL firstNameKVOFired = NO, rootWasInModBlock = NO;
     __block NSUInteger revisionKVOFireCount = 0;
     _kvoHandlerBlock = ^BOOL(NSString *keyPath, id object, NSDictionary *change, void *context) {
         if (context == &firstNameKVOFired) {
             firstNameKVOFired = YES;
-            docWasInModBlock = [doc insideModificationBlock];
+            rootWasInModBlock = [doc.root insideModificationBlock];
             return YES;
         } else if (context == &revisionKVOFireCount) {
             revisionKVOFireCount++;
@@ -75,7 +75,7 @@ typedef BOOL (^KVOBlock)(NSString *keyPath, id object, NSDictionary *change, voi
     _kvoHandlerBlock = nil;
     
     STAssertTrue(firstNameKVOFired, NULL);
-    STAssertTrue(docWasInModBlock, @"Modification to dictionary should occur within a modification block");
+    STAssertTrue(rootWasInModBlock, @"Modification to dictionary should occur within a modification block");
     STAssertEquals(revisionKVOFireCount, 1ul, @"Revision change should have fired exactly once");
     
     RKRevision *secondRev = doc.currentRevision;
@@ -84,6 +84,47 @@ typedef BOOL (^KVOBlock)(NSString *keyPath, id object, NSDictionary *change, voi
     
     STAssertTrue([firstRev compare:secondRev] == NSOrderedAscending, @"New revision should compare later than first");
     STAssertTrue([secondRev compare:firstRev] == NSOrderedDescending, @"New revision should compare later than first");
+}
+
+- (void)testGeneratedModificationBlocks;
+{
+    RKDocument *doc = [[RKDocument alloc] initWithIdentifier:nil];
+    [doc.root setValue:@"Freddie" forKey:firstNameKey];
+    [doc.root setValue:@"Mercury" forKey:lastNameKey];
+    
+    RKModificationBlock setFreddieToFarrokh = [doc modificationBlockToSetValue:@"Farrokh" forRootKeyPath:firstNameKey];
+    STAssertEqualObjects([doc.root valueForKey:firstNameKey], @"Freddie", @"Generating modification block shouldn't have side effects");
+    
+    BOOL modResult = [doc modifyWithBlock:setFreddieToFarrokh];
+    STAssertTrue(modResult, @"Modification should succeed with old value");
+    STAssertEqualObjects([doc.root valueForKey:firstNameKey], @"Farrokh", @"Modification block should alter value");
+    
+    // Keep firstName as @"Farrokh"
+    modResult = [doc modifyWithBlock:setFreddieToFarrokh];
+    STAssertTrue(modResult, @"Modification should succeed if already at new value");
+    STAssertEqualObjects([doc.root valueForKey:firstNameKey], @"Farrokh", @"Modification block should alter value");
+    
+    [doc.root setValue:@"completelyDifferent" forKey:firstNameKey];
+    modResult = [doc modifyWithBlock:setFreddieToFarrokh];
+    STAssertFalse(modResult, @"Modification should fail if value is neither old nor new");
+    STAssertEqualObjects([doc.root valueForKey:firstNameKey], @"completelyDifferent", @"Failed modification block should not change collection");
+    
+    [doc.root setValue:nil forKey:firstNameKey];
+    modResult = [doc.root modifyWithBlock:setFreddieToFarrokh];
+    STAssertFalse(modResult, @"Modification should fail if value is neither old nor new");
+    STAssertNil([doc.root valueForKey:firstNameKey], @"Failed modification block should not change collection");
+    
+    [doc.root setValue:@"Freddie" forKey:firstNameKey];
+    RKModificationBlock noRealChange = [doc modificationBlockToSetValue:@"Freddie" forRootKeyPath:firstNameKey];
+    [doc.root setValue:@"completelyDifferent" forKey:firstNameKey];
+    modResult = [doc.root modifyWithBlock:noRealChange];
+    STAssertTrue(modResult, @"Any modification should succeed if setter was identity");
+    STAssertEqualObjects([doc.root valueForKey:firstNameKey], @"completelyDifferent", @"Any modification should succeed if setter was identity");
+    
+    [doc.root setValue:nil forKey:firstNameKey];
+    modResult = [doc.root modifyWithBlock:noRealChange];
+    STAssertTrue(modResult, @"Any modification should succeed if setter was identity");
+    STAssertTrue([doc.root count] == 1, @"Any modification should succeed if setter was identity");
 }
 
 @end

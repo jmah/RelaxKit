@@ -6,6 +6,7 @@
 //  Copyright (c) 2011 Jonathon Mah. All rights reserved.
 //
 
-#import <RelaxKit/RKDictionary.h>
+#import <RelaxKit/RKCollection.h>
+#import <RelaxKit/RKMutableDictionary.h>
 #import <RelaxKit/RKDocument.h>
 #import <RelaxKit/RKRevision.h>
