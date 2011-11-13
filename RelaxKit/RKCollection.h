@@ -9,12 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class RKDocument;
-@class RKRevision;
 
-enum RKAssociationType {
-    RKAssociationRetain = 1,
-    RKAssociationCopy = 3,
-};
 
 typedef BOOL (^RKModificationBlock)(id /*<RKCollection>*/ localCollection);
 
@@ -41,7 +36,6 @@ typedef BOOL (^RKModificationBlock)(id /*<RKCollection>*/ localCollection);
 - (void)setValue:(id)value forKeyPath:(NSString *)keyPath;
 - (void)setPrimitiveValue:(id)preparedValue forKey:(NSString *)key; // No change notifications, no further processing
 
-- (enum RKAssociationType)associationTypeForKey:(NSString *)key;
-- (id)prepareSetValue:(id)value forKey:(NSString *)key; // Returns a copy of the value depending on the associationType; copies and configures sub-collections.
+- (id)prepareSetValue:(id)value forKey:(NSString *)key; // Returns a copy of the value, configuring sub-collections.
 
 @end

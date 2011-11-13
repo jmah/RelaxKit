@@ -189,23 +189,16 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
     [_backingDictionary setValue:preparedValue forKey:key];
 }
 
-- (enum RKAssociationType)associationTypeForKey:(NSString *)key;
-{ return RKAssociationRetain; }
-
 - (id)prepareSetValue:(id)value forKey:(NSString *)key;
 {
-    // Collections are always copied
+    // Promote collections to an <RKCollection> implementation
+    if ([value isKindOfClass:[NSDictionary class]])
+        value = [RKMutableDictionary dictionaryWithDictionary:value];
+    
     if ([value conformsToProtocol:@protocol(RKCollection)])
         return [value mutableCopyWithKey:key inParent:self ofDocument:self.document];
     
-    switch ([self associationTypeForKey:key]) {
-        case RKAssociationCopy:
-            return [value copy];
-        case RKAssociationRetain:
-            return value;
-    }
-    NSAssert(NO, @"Unhandled case in -prepareSetValue:forKey:");
-    return nil;
+    return [value copy];
 }
 
 
