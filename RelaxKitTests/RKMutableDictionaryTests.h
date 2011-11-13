@@ -12,6 +12,7 @@
 @interface RKMutableDictionaryTests : SenTestCase
 
 - (void)testDictionarylike;
+- (void)testCreation;
 - (void)testModificationBlocks;
 - (void)testDictionaryHierarchy;
 

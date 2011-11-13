@@ -53,6 +53,22 @@
     STAssertFalse([dict isEqual:copy], @"Copies should be independent");
 }
 
+- (void)testCreation;
+{
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                          @"aval", @"akey", @"bval", @"bkey", nil];
+    
+    RKMutableDictionary *madeWithObjectsAndKeys = [RKMutableDictionary dictionaryWithObjectsAndKeys:
+                                                   @"aval", @"akey", @"bval", @"bkey", nil];
+    STAssertEqualObjects(madeWithObjectsAndKeys, dict, @"-dictionaryWithObjectsAndKeys: should work for RKMutableDictionary");
+    STAssertEqualObjects([RKMutableDictionary dictionaryWithDictionary:dict], dict, @"-dictionaryWithDictionary: should work for RKMutableDictionary");
+    
+    RKMutableDictionary *withCapacity = [RKMutableDictionary dictionaryWithCapacity:3];
+    [withCapacity setObject:@"aval" forKey:@"akey"];
+    [withCapacity setObject:@"bval" forKey:@"bkey"];
+    STAssertEqualObjects(withCapacity, dict, @"-dictionaryWithCapacity: should work for RKMutableDictionary");
+}
+
 - (void)testModificationBlocks;
 {
     RKMutableDictionary *dict = [[RKMutableDictionary alloc] init];
