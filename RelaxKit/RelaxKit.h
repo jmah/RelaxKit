@@ -9,4 +9,3 @@
 #import <RelaxKit/RKDictionary.h>
 #import <RelaxKit/RKDocument.h>
 #import <RelaxKit/RKRevision.h>
-#import <RelaxKit/RKValueStorage.h>
