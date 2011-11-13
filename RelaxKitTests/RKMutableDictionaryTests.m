@@ -10,9 +10,9 @@
 #import <RelaxKit/RelaxKit.h>
 
 
-static NSString *const firstNameKey = @"firstName";
-static NSString *const lastNameKey = @"lastName";
-static NSString *const salesCountKey = @"salesCount";
+#define FN @"firstName"
+#define LN @"lastName"
+#define CHILD @"childDict"
 
 
 @implementation RKMutableDictionaryTests
@@ -25,29 +25,30 @@ static NSString *const salesCountKey = @"salesCount";
     STAssertTrue([dict count] == 0, @"New dictionary should be empty");
     STAssertNil(dict.document, @"New dictionary should start with no document");
     
-    [dict setValue:@"Freddie" forKey:firstNameKey];
+    [dict setValue:@"Freddie" forKey:FN];
     STAssertTrue([dict count] == 1, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:FN], @"Freddie", @"Getter should return equal value");
     
     NSDictionary *afterOneDict = [dict copy];
     STAssertTrue([afterOneDict count] == 1, @"Dictionary representation should have same count and values");
-    STAssertEqualObjects([afterOneDict valueForKey:firstNameKey], @"Freddie", @"Dictionary representation should have same count and values");
+    STAssertEqualObjects([afterOneDict valueForKey:FN], @"Freddie", @"Dictionary representation should have same count and values");
     
-    [dict setValue:@"Mercury" forKey:lastNameKey];
+    [dict setValue:@"Mercury" forKey:LN];
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:lastNameKey], @"Mercury", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:LN], @"Mercury", @"Getter should return equal value");
     
     STAssertTrue([afterOneDict count] == 1, @"Dictionary representation should be immutable snapshot");
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
     
     RKMutableDictionary *copy = [dict mutableCopy];
     
+    STAssertEquals([dict hash], [copy hash], @"Equal copies should have equal hashes");
     STAssertEqualObjects(dict, copy, @"Copies should compare equal");
     
-    [dict setValue:@"Farrokh" forKey:firstNameKey];
+    [dict setValue:@"Farrokh" forKey:FN];
     STAssertTrue([dict count] == 2, @"Setting value for old key should keep count constant");
-    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Farrokh", @"Getter should return equal value");
-    STAssertEqualObjects([copy valueForKey:firstNameKey], @"Freddie", @"Copy should have separate mutation");
+    STAssertEqualObjects([dict valueForKey:FN], @"Farrokh", @"Getter should return equal value");
+    STAssertEqualObjects([copy valueForKey:FN], @"Freddie", @"Copy should have separate mutation");
     
     STAssertFalse([dict isEqual:copy], @"Copies should be independent");
 }
@@ -70,41 +71,42 @@ static NSString *const salesCountKey = @"salesCount";
     STAssertFalse(modResult, NULL);
     
     modResult = [dict modifyWithBlock:^BOOL(RKMutableDictionary *localDict) {
-        [localDict setValue:@"Freddie" forKey:firstNameKey];
+        [localDict setValue:@"Freddie" forKey:FN];
         return YES;
     }];
     STAssertTrue(modResult, NULL);
     STAssertTrue([dict count] == 1, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:firstNameKey], @"Freddie", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:FN], @"Freddie", @"Getter should return equal value");
     
     
     __block NSDictionary *beforeDict;
     modResult = [dict modifyWithBlock:^BOOL(RKMutableDictionary *localDict) {
         beforeDict = [localDict copy];
-        [localDict setValue:@"Mercury" forKey:lastNameKey];
+        [localDict setValue:@"Mercury" forKey:LN];
         return YES;
     }];
     STAssertTrue([beforeDict count] == 1, @"Dictionary representation should be immutable snapshot");
     STAssertTrue([dict count] == 2, @"Setting new value should increase count");
-    STAssertEqualObjects([dict valueForKey:lastNameKey], @"Mercury", @"Getter should return equal value");
+    STAssertEqualObjects([dict valueForKey:LN], @"Mercury", @"Getter should return equal value");
     
     
     RKModificationBlock lowercaseFirstName = ^BOOL(RKMutableDictionary *localDict) {
-        NSString *lowercased = [[localDict valueForKey:firstNameKey] lowercaseString];
-        [localDict setValue:lowercased forKey:firstNameKey];
+        NSString *lowercased = [[localDict valueForKey:FN] lowercaseString];
+        [localDict setValue:lowercased forKey:FN];
         return YES;
     };
     
     modResult = [dict modifyWithBlock:lowercaseFirstName];
     STAssertTrue(modResult, @"Custom modification block should succeed");
-    STAssertEqualObjects([dict valueForKey:firstNameKey], @"freddie", @"Modification block should alter value");
+    STAssertEqualObjects([dict valueForKey:FN], @"freddie", @"Modification block should alter value");
     
-    [dict setValue:@"WOWZA" forKey:firstNameKey];
+    [dict setValue:@"WOWZA" forKey:FN];
     modResult = [dict modifyWithBlock:lowercaseFirstName];
     STAssertTrue(modResult, @"Custom modification block should succeed");
-    STAssertEqualObjects([dict valueForKey:firstNameKey], @"wowza", @"Modification block should alter value");
+    STAssertEqualObjects([dict valueForKey:FN], @"wowza", @"Modification block should alter value");
     
     
+    NSString *const salesCountKey = @"salesCount";
     RKModificationBlock incrementSalesCount = ^BOOL(RKMutableDictionary *localDict) {
         NSNumber *salesCount = [localDict valueForKey:salesCountKey];
         [localDict setValue:[NSNumber numberWithLong:([salesCount longValue] + 1)] forKey:salesCountKey];
@@ -119,24 +121,29 @@ static NSString *const salesCountKey = @"salesCount";
 
 - (void)testDictionaryHierarchy;
 {
-    NSString *const childDictKey = @"childDict";
     RKMutableDictionary *parent = [[RKMutableDictionary alloc] init];
     
     RKMutableDictionary *prospectiveChild = [[RKMutableDictionary alloc] init];
-    [prospectiveChild setValue:@"Stanley" forKey:firstNameKey];
+    [prospectiveChild setValue:@"Stanley" forKey:FN];
     STAssertNil(prospectiveChild.parentCollection, @"Dictionary should have no initial parent");
     
-    [parent setValue:prospectiveChild forKey:childDictKey];
-    RKMutableDictionary *actualChild = [parent valueForKey:childDictKey];
-    NSString *const childFirstNameKey = [[NSArray arrayWithObjects:childDictKey, firstNameKey, nil] componentsJoinedByString:@"."];
-    STAssertEquals([parent valueForKeyPath:childFirstNameKey], @"Stanley", @"-valueForKeyPath: should traverse child dictionaries");
+    [parent setValue:prospectiveChild forKey:CHILD];
+    RKMutableDictionary *actualChild = [parent valueForKey:CHILD];
+    STAssertEquals([parent valueForKeyPath:CHILD"."FN], @"Stanley", @"-valueForKeyPath: should traverse child dictionaries");
     
     STAssertNil(prospectiveChild.parentCollection, @"Original dictionary should be unchanged");
     STAssertNil(prospectiveChild.keyInParent, @"Original dictionary should be unchanged");
     STAssertTrue(actualChild.parentCollection == parent, @"Child value's parent should be set");
-    STAssertEqualObjects(actualChild.keyInParent, childDictKey, @"Child value's key-in-parent should be set");
+    STAssertEqualObjects(actualChild.keyInParent, CHILD, @"Child value's key-in-parent should be set");
     
-    STAssertEqualObjects(actualChild.keyPathFromRootCollection, childDictKey, @"Child value's keyPath from parent should be valid");
+    STAssertEqualObjects(actualChild.keyPathFromRootCollection, CHILD, @"Child value's keyPath from parent should be valid");
+    
+    [actualChild setValue:[RKMutableDictionary dictionaryWithObject:@"Susan" forKey:FN]
+                   forKey:CHILD];
+    RKMutableDictionary *actualGrandchild = [actualChild valueForKey:CHILD];
+    STAssertEqualObjects([actualGrandchild valueForKey:FN], @"Susan", nil);
+    STAssertEqualObjects([actualGrandchild keyPathFromRootCollection], CHILD"."CHILD, @"Grandchild value's keyPath from parent should be valid");
+    STAssertEqualObjects([parent valueForKeyPath:CHILD"."CHILD"."FN], @"Susan", nil);
 }
 
 // TODO: Check values are copied (if funneled through -setValue:forKey:)
