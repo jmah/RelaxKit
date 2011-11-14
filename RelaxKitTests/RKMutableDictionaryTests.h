@@ -15,5 +15,6 @@
 - (void)testCreation;
 - (void)testModificationBlocks;
 - (void)testDictionaryHierarchy;
+- (void)testGeneratedModificationBlocks;
 
 @end

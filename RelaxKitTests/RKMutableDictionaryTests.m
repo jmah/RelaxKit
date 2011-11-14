@@ -171,6 +171,45 @@
     STAssertEqualObjects([parent valueForKeyPath:CHILD"."CHILD"."FN], @"Susan", nil);
 }
 
-// TODO: Check values are copied (if funneled through -setValue:forKey:)
+- (void)testGeneratedModificationBlocks;
+{
+    RKMutableDictionary *dict = [[RKMutableDictionary alloc] init];
+    [dict setValue:@"Freddie" forKey:FN];
+    [dict setValue:@"Mercury" forKey:LN];
+    
+    RKModificationBlock setFreddieToFarrokh = [dict modificationBlockToSetValue:@"Farrokh" forKey:FN];
+    STAssertEqualObjects([dict valueForKey:FN], @"Freddie", @"Generating modification block shouldn't have side effects");
+    
+    BOOL modResult = [dict modifyWithBlock:setFreddieToFarrokh];
+    STAssertTrue(modResult, @"Modification should succeed with old value");
+    STAssertEqualObjects([dict valueForKey:FN], @"Farrokh", @"Modification block should alter value");
+    
+    // Keep firstName as @"Farrokh"
+    modResult = [dict modifyWithBlock:setFreddieToFarrokh];
+    STAssertTrue(modResult, @"Modification should succeed if already at new value");
+    STAssertEqualObjects([dict valueForKey:FN], @"Farrokh", @"Modification block should alter value");
+    
+    [dict setValue:@"completelyDifferent" forKey:FN];
+    modResult = [dict modifyWithBlock:setFreddieToFarrokh];
+    STAssertFalse(modResult, @"Modification should fail if value is neither old nor new");
+    STAssertEqualObjects([dict valueForKey:FN], @"completelyDifferent", @"Failed modification block should not change collection");
+    
+    [dict setValue:nil forKey:FN];
+    modResult = [dict modifyWithBlock:setFreddieToFarrokh];
+    STAssertFalse(modResult, @"Modification should fail if value is neither old nor new");
+    STAssertNil([dict valueForKey:FN], @"Failed modification block should not change collection");
+    
+    [dict setValue:@"Freddie" forKey:FN];
+    RKModificationBlock noRealChange = [dict modificationBlockToSetValue:@"Freddie" forKey:FN];
+    [dict setValue:@"completelyDifferent" forKey:FN];
+    modResult = [dict modifyWithBlock:noRealChange];
+    STAssertTrue(modResult, @"Any modification should succeed if setter was identity");
+    STAssertEqualObjects([dict valueForKey:FN], @"completelyDifferent", @"Any modification should succeed if setter was identity");
+    
+    [dict setValue:nil forKey:FN];
+    modResult = [dict modifyWithBlock:noRealChange];
+    STAssertTrue(modResult, @"Any modification should succeed if setter was identity");
+    STAssertTrue([dict count] == 1, @"Any modification should succeed if setter was identity");
+}
 
 @end

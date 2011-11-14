@@ -21,8 +21,6 @@
 @property (readonly, nonatomic, retain) RKRevision *currentRevision;
 @property (readonly, nonatomic, copy) RKMutableDictionary *root;
 
-- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
-
-- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forRootKeyPath:(NSString *)keyPath;
+- (BOOL)modifyWithBlock:(RKModificationBlock)rootRelativeModBlock;
 
 @end

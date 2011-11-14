@@ -26,6 +26,7 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
     NSMutableDictionary *_backingDictionary;
     
     NSUInteger _modificationDepth;
+    NSMutableArray *_valuesWithOpenedModificationsStack; // Objects are NSMutableArray
     NSMutableArray *_deferredDidChangeKeysStack; // Objects are NSMutableArray
     NSMutableArray *_rollbackValuesStack; // Objects are NSMutableDictionary
     BOOL _runningDeferredDidChangeKeys;
@@ -102,25 +103,46 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
 
 - (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
 {
-    [self beginModifications];
-    BOOL success = modBlock(self);
-    [self commitModificationsKeepingChanges:success];
-    return success;
+    RKDocument *strongDocument = self.document;
+    if (strongDocument) {
+        // Our document applies and tracks all modifications
+        NSString *keyPathFromRoot = [self keyPathFromRootCollection];
+        RKModificationBlock rootRelativeBlock = [modBlock copy];
+        if (keyPathFromRoot) {
+            rootRelativeBlock = [^(RKMutableDictionary *root) {
+                return modBlock([root valueForKeyPath:keyPathFromRoot]);
+            } copy];
+        }
+        
+        return [strongDocument modifyWithBlock:rootRelativeBlock];
+        
+    } else {
+        // No document; apply the modification ourselves
+        [self beginModifications];
+        BOOL success = modBlock(self);
+        [self commitModificationsKeepingChanges:success];
+        return success;
+    }
 }
 
 - (void)beginModifications;
 {
     if (_modificationDepth++ == 0) {
+        _valuesWithOpenedModificationsStack = [NSMutableArray array];
         _deferredDidChangeKeysStack = [NSMutableArray array];
         _rollbackValuesStack = [NSMutableArray array];
     }
     
+    NSMutableArray *openedModifications = [NSMutableArray array];
+    [_valuesWithOpenedModificationsStack addObject:openedModifications];
     [_deferredDidChangeKeysStack addObject:[NSMutableArray array]];
     [_rollbackValuesStack addObject:[NSMutableDictionary dictionary]];
     
     [self enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
-        if ([obj conformsToProtocol:@protocol(RKCollection)])
+        if ([obj conformsToProtocol:@protocol(RKCollection)]) {
+            [openedModifications addObject:obj];
             [obj beginModifications];
+        }
     }];
 }
 
@@ -128,14 +150,12 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
 {
     NSParameterAssert(_modificationDepth > 0);
     
-#warning Handle collections that came/went, syncing their mod depth or something
-    [self enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
-        if ([obj conformsToProtocol:@protocol(RKCollection)])
-            [obj commitModificationsKeepingChanges:keepChanges];
-    }];
-    
+    NSArray *modificationsToClose = [_valuesWithOpenedModificationsStack lastObject];
     NSArray *deferredDidChangeKeys = [_deferredDidChangeKeysStack lastObject];
     NSDictionary *rollbackValues = [_rollbackValuesStack lastObject];
+    
+    for (id <RKCollection> collection in modificationsToClose)
+        [collection commitModificationsKeepingChanges:keepChanges];
     
     if (!keepChanges) {
         for (NSString *key in [NSSet setWithArray:deferredDidChangeKeys])
@@ -148,6 +168,7 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
     }];
     _runningDeferredDidChangeKeys = NO;
     
+    [_valuesWithOpenedModificationsStack removeLastObject];
     [_deferredDidChangeKeysStack removeLastObject];
     [_rollbackValuesStack removeLastObject];
     
@@ -163,21 +184,16 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
 - (void)setValue:(id)value forKey:(NSString *)key;
 {
     NSParameterAssert([key isKindOfClass:[NSString class]]);
-    RKDocument *strongDocument = self.document;
-    if ([self insideModificationBlock] || !strongDocument) {
+    if ([self insideModificationBlock]) {
         id preparedValue = [self prepareValue:value forKey:key];
         
         [self willChangeValueForKey:key];
         [self setPrimitiveValue:preparedValue forKey:key];
         [self didChangeValueForKey:key];
         
-    } else /* (![self insideModificationBlock] && strongDocument) */ {
-        // Translate request into a modification block, if we have a document
-        // Modification block does a root-relative -setValue:forKeyPath:
-        
-        NSString *rootRelative = joinKeyPath(self.keyPathFromRootCollection, key);
-        RKModificationBlock rootRelativeModBlock = [strongDocument modificationBlockToSetValue:value forRootKeyPath:rootRelative];
-        BOOL success = [strongDocument modifyWithBlock:rootRelativeModBlock];
+    } else {
+        // Translate request into a modification block
+        BOOL success = [self modifyWithBlock:[self modificationBlockToSetValue:value forKey:key]];
         if (!success)
             [NSException raise:NSInternalInconsistencyException format:@"Failed to apply immediate modification block in -[RKMutableDictionary setValue:%@ forKey:%@]. This is either a logic error, or the dictionary was modified concurrently (which is illegal).", value, key];
         
@@ -186,6 +202,7 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
 
 - (void)setPrimitiveValue:(id)preparedValue forKey:(NSString *)key;
 {
+    NSAssert1([self insideModificationBlock], @"%s must only be called from inside a modification block", __func__);
     [_backingDictionary setValue:preparedValue forKey:key];
 }
 
@@ -217,6 +234,27 @@ static NSString *joinKeyPath(NSString *firstKeyOrNil, NSString *secondKey) {
     if ([self insideModificationBlock] && !_runningDeferredDidChangeKeys)
         [[_deferredDidChangeKeysStack lastObject] addObject:key];
     [super didChangeValueForKey:key];
+}
+
+
+#pragma mark RKMutableDictionary
+
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
+{
+    id oldValue = [self valueForKey:key];
+    
+    // If unchanged, always succeed (and avoid capturing unneeded values)
+    if ((oldValue == newValue) || [oldValue isEqual:newValue])
+        return [^BOOL(RKMutableDictionary *localSelf) { return YES; } copy];
+    
+    return [^BOOL(RKMutableDictionary *localSelf) {
+        id curValue = [localSelf valueForKey:key];
+        if ((curValue == oldValue) || [curValue isEqual:oldValue]) {
+            [localSelf setValue:newValue forKey:key];
+            return YES;
+        }
+        return (curValue == newValue) || [curValue isEqual:newValue];
+    } copy];
 }
 
 @end

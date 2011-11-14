@@ -33,37 +33,16 @@
     return self;
 }
 
-- (BOOL)modifyWithBlock:(RKModificationBlock)modBlock;
+- (BOOL)modifyWithBlock:(RKModificationBlock)rootRelativeModBlock;
 {
     [self.root beginModifications];
     [self willChangeValueForKey:@"currentRevision"];
-    BOOL success = modBlock(self.root);
+    BOOL success = rootRelativeModBlock(self.root);
     if (success)
         _currentRevision = [[RKUnsavedRev alloc] initAsSuccessorOfRev:self.currentRevision];
     [self didChangeValueForKey:@"currentRevision"];
     [self.root commitModificationsKeepingChanges:success];
     return success;
-}
-
-
-#pragma mark RKMutableDictionary
-
-- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forRootKeyPath:(NSString *)keyPath;
-{
-    id oldValue = [self.root valueForKeyPath:keyPath];
-    
-    // If unchanged, always succeed (and avoid capturing unneeded values)
-    if ((oldValue == newValue) || [oldValue isEqual:newValue])
-        return [^BOOL(RKMutableDictionary *localRoot) { return YES; } copy];
-    
-    return [^BOOL(RKMutableDictionary *localRoot) {
-        id curValue = [localRoot valueForKeyPath:keyPath];
-        if ((curValue == oldValue) || [curValue isEqual:oldValue]) {
-            [localRoot setValue:newValue forKeyPath:keyPath];
-            return YES;
-        }
-        return (curValue == newValue) || [curValue isEqual:newValue];
-    } copy];
 }
 
 

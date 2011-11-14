@@ -14,4 +14,6 @@
 
 // In constrast to NS(Mutable)Dictionary, -objectForKey: and -setObject:forKey: are funneled through -valueForKey: and setValue:forKey:
 
+- (RKModificationBlock)modificationBlockToSetValue:(id)newValue forKey:(NSString *)key;
+
 @end
